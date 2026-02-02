@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StoryTime</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Language Selection Page -->
+    <div id="page-language" class="page language-page">
+        <div class="logo">StoryTime</div>
+        <div class="tagline">Des histoires magiques pour petits reveurs</div>
+        <div class="tagline" style="margin-top:-40px; opacity:0.7">Magical Stories for Little Dreamers</div>
+
+        <div class="language-buttons">
+            <button class="lang-btn" onclick="selectLanguage('fr')">
+                <span class="flag">🇫🇷</span>
+                <span>Francais</span>
+            </button>
+            <button class="lang-btn" onclick="selectLanguage('en')">
+                <span class="flag">🇬🇧</span>
+                <span>English</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Home Page -->
+    <div id="page-home" class="page home-page">
+        <div class="header">
+            <button class="header-btn" onclick="showLibrary()">📚</button>
+            <h1 class="page-title" data-i18n="tellMeStory">Raconte-moi une histoire !</h1>
+            <button class="header-btn" onclick="showSettings()">⚙️</button>
+        </div>
+
+        <!-- Record Section -->
+        <div class="record-section">
+            <button id="record-btn" class="record-btn" onclick="toggleRecording()">
+                <div class="audio-waves">
+                    <div class="audio-wave"></div>
+                    <div class="audio-wave"></div>
+                    <div class="audio-wave"></div>
+                </div>
+                <span class="icon">🎤</span>
+                <span id="record-label" class="label" data-i18n="pressAndSpeak">Appuie et parle !</span>
+            </button>
+            <p class="record-hint" data-i18n="keywordsLabel">Mots-cles de l'histoire</p>
+        </div>
+
+        <!-- Keywords Section -->
+        <div class="keywords-section">
+            <div class="section-label" data-i18n="keywordsLabel">Mots-cles de l'histoire</div>
+            <div id="keywords-container" class="keywords-container">
+                <span class="keywords-empty" data-i18n="keywordsEmpty">Dis ce que tu veux dans ton histoire...</span>
+            </div>
+            <div class="keywords-actions">
+                <button class="action-btn-small" onclick="showAddKeywordModal()">+ <span data-i18n="addKeyword">Ajouter</span></button>
+                <button class="action-btn-small" onclick="clearKeywords()">🔄 <span data-i18n="reRecord">Re-enregistrer</span></button>
+            </div>
+        </div>
+
+        <!-- Child Names -->
+        <div class="input-section">
+            <div class="section-label" data-i18n="heroNames">Prenoms des heros (optionnel)</div>
+            <input type="text" class="input-field"
+                   data-i18n-placeholder="heroNamesPlaceholder"
+                   placeholder="Lina, Adam..."
+                   onchange="onChildNamesChange(this.value)">
+        </div>
+
+        <!-- Voice Selector -->
+        <div class="voice-selector">
+            <div class="section-label" data-i18n="whoTells">Qui raconte l'histoire ?</div>
+            <select id="voice-select" class="voice-dropdown" onchange="onVoiceChange(this.value)">
+                <!-- Populated by JS -->
+            </select>
+            <button class="voice-preview-btn" onclick="previewVoice()">
+                ▶ <span data-i18n="voicePreview">Ecouter</span>
+            </button>
+        </div>
+
+        <!-- Duration Selector -->
+        <div class="duration-section">
+            <div class="section-label" data-i18n="storyDuration">Duree de l'histoire</div>
+            <div class="duration-options">
+                <button class="duration-btn active" data-duration="5" onclick="selectDuration(5)">
+                    <div class="time">5 <span data-i18n="minutes">min</span></div>
+                    <div class="stars">⭐</div>
+                </button>
+                <button class="duration-btn" data-duration="10" onclick="selectDuration(10)">
+                    <div class="time">10 <span data-i18n="minutes">min</span></div>
+                    <div class="stars">⭐⭐</div>
+                </button>
+                <button class="duration-btn" data-duration="15" onclick="selectDuration(15)">
+                    <div class="time">15 <span data-i18n="minutes">min</span></div>
+                    <div class="stars">⭐⭐⭐</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button id="generate-btn" class="generate-btn" onclick="generateStory()" disabled>
+            ✨ <span data-i18n="createStory">Creer mon histoire !</span>
+        </button>
+    </div>
+
+    <!-- Generating Page -->
+    <div id="page-generating" class="page generating-page">
+        <div class="generating-icon">📖</div>
+        <div id="generating-text" class="generating-text" data-i18n="readingIdeas">Lecture de vos idees...</div>
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <button class="cancel-btn" onclick="cancelGeneration()" data-i18n="cancel">Annuler</button>
+    </div>
+
+    <!-- Player Page -->
+    <div id="page-player" class="page player-page">
+        <div class="header">
+            <button class="header-btn" onclick="goBack()">←</button>
+            <h1 class="page-title">StoryTime</h1>
+            <div style="width:44px"></div>
+        </div>
+
+        <h2 id="story-title" class="story-title">Titre de l'histoire</h2>
+
+        <div class="story-image">📖</div>
+
+        <div class="text-toggle">
+            <button id="text-toggle-btn" class="text-toggle-btn" onclick="toggleText()" data-i18n="showText">Voir le texte</button>
+        </div>
+
+        <div id="story-text-container" class="story-text-container" style="display:none">
+            <div id="story-text" class="story-text"></div>
+        </div>
+
+        <!-- Audio Player -->
+        <div class="audio-player">
+            <div class="audio-progress" onclick="seekToPosition(event)">
+                <div id="audio-progress-fill" class="audio-progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="audio-time">
+                <span id="audio-time-current">0:00</span>
+                <span id="audio-time-total">0:00</span>
+            </div>
+            <div class="audio-controls">
+                <button class="audio-btn" onclick="seekAudio(-15)">⏪</button>
+                <button id="play-btn" class="audio-btn play-btn" onclick="togglePlay()">▶</button>
+                <button class="audio-btn" onclick="seekAudio(15)">⏩</button>
+            </div>
+            <div class="speed-selector">
+                <button class="speed-btn" data-speed="0.75" onclick="setSpeed(0.75)">0.75x</button>
+                <button class="speed-btn active" data-speed="1" onclick="setSpeed(1)">1x</button>
+                <button class="speed-btn" data-speed="1.25" onclick="setSpeed(1.25)">1.25x</button>
+            </div>
+        </div>
+
+        <!-- Player Actions -->
+        <div class="player-actions">
+            <button class="player-action-btn" onclick="saveStory()">
+                💾 <span data-i18n="save">Sauvegarder</span>
+            </button>
+            <button class="player-action-btn" onclick="newStory()">
+                🔄 <span data-i18n="newStory">Nouvelle</span>
+            </button>
+            <button class="player-action-btn" onclick="shareStory()">
+                📤 <span data-i18n="share">Partager</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Library Page -->
+    <div id="page-library" class="page library-page">
+        <div class="header">
+            <button class="header-btn" onclick="goBack()">←</button>
+            <h1 class="page-title" data-i18n="library">Ma bibliotheque</h1>
+            <div style="width:44px"></div>
+        </div>
+
+        <div id="library-list" class="library-list">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- Add Keyword Modal -->
+    <div id="modal-add-keyword" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" data-i18n="addKeywordTitle">Ajouter un mot-cle</h3>
+            <input type="text" id="keyword-input" class="modal-input"
+                   placeholder="dragon, princesse..."
+                   onkeypress="if(event.key==='Enter')confirmAddKeyword()">
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="hideAddKeywordModal()" data-i18n="cancel">Annuler</button>
+                <button class="modal-btn primary" onclick="confirmAddKeyword()" data-i18n="addKeyword">Ajouter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
