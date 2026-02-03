@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var speechRecognizer: SpeechRecognizer? = null
     private var mediaPlayer: MediaPlayer? = null
     private var isListening = false
+    private var isPrepared = false
     private var backPressedTime: Long = 0
 
     companion object {
@@ -281,9 +282,11 @@ class MainActivity : AppCompatActivity() {
     private fun playAudioFile(url: String) {
         try {
             mediaPlayer?.release()
+            isPrepared = false
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(url)
                 setOnPreparedListener {
+                    isPrepared = true
                     it.start()
                     webView.evaluateJavascript("onAudioPlay(${it.duration})", null)
                     startProgressUpdate()
@@ -292,28 +295,35 @@ class MainActivity : AppCompatActivity() {
                     webView.evaluateJavascript("onAudioComplete()", null)
                 }
                 setOnErrorListener { _, what, extra ->
+                    isPrepared = false
                     webView.evaluateJavascript("onAudioError('error_${what}_${extra}')", null)
                     true
                 }
                 prepareAsync()
             }
         } catch (e: Exception) {
+            isPrepared = false
             webView.evaluateJavascript("onAudioError('${e.message?.replace("'", "\\'")}')", null)
         }
     }
 
     private fun pauseAudioFile() {
-        mediaPlayer?.pause()
-        webView.evaluateJavascript("onAudioPause()", null)
+        if (isPrepared) {
+            mediaPlayer?.pause()
+            webView.evaluateJavascript("onAudioPause()", null)
+        }
     }
 
     private fun resumeAudioFile() {
-        mediaPlayer?.start()
-        webView.evaluateJavascript("onAudioResume()", null)
-        startProgressUpdate()
+        if (isPrepared) {
+            mediaPlayer?.start()
+            webView.evaluateJavascript("onAudioResume()", null)
+            startProgressUpdate()
+        }
     }
 
     private fun stopAudioFile() {
+        isPrepared = false
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
