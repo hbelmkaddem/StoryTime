@@ -6,6 +6,7 @@ services:
     container_name: storytime-edge-tts
     environment:
       - PORT=5050
+      - API_KEY=sk-storytime
     restart: always
     networks:
       - storytime-network
