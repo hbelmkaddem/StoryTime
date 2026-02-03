@@ -14,6 +14,10 @@ async def generate_audio(text: str, voice_id: str, speed: float = 0.9) -> bytes:
         try:
             response = await client.post(
                 f"{EDGE_TTS_URL}/v1/audio/speech",
+                headers={
+                    "Authorization": "Bearer sk-storytime",
+                    "Content-Type": "application/json"
+                },
                 json={
                     "input": text,
                     "voice": voice_id,
