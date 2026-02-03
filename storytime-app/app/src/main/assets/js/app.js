@@ -2,7 +2,7 @@
 
 // Configuration
 const CONFIG = {
-    API_URL: 'https://api.onlinefitnessblog.com',
+    API_URL: 'http://api.onlinefitnessblog.com',
     API_KEY: 'StoryTime2024SecretKey'
 };
 
