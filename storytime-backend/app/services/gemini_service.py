@@ -3,7 +3,7 @@ import re
 from app.config import GEMINI_API_KEY
 from app.services.prompt_service import build_story_prompt
 
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 
 class GeminiError(Exception):
