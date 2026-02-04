@@ -236,7 +236,23 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // If already listening, stop first
+        if (isListening) {
+            stopListening()
+            // Add a small delay before restarting
+            android.os.Handler(mainLooper).postDelayed({
+                startListeningInternal(lang)
+            }, 300)
+        } else {
+            startListeningInternal(lang)
+        }
+    }
+
+    private fun startListeningInternal(lang: String) {
+        // Always destroy and recreate to avoid busy state
         speechRecognizer?.destroy()
+        speechRecognizer = null
+
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
 
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
@@ -260,11 +276,17 @@ class MainActivity : AppCompatActivity() {
 
             override fun onError(error: Int) {
                 isListening = false
+                // Destroy recognizer on error to ensure clean state next time
+                speechRecognizer?.destroy()
+                speechRecognizer = null
+
                 val errorMessage = when (error) {
                     SpeechRecognizer.ERROR_NO_MATCH -> "no_match"
                     SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "timeout"
                     SpeechRecognizer.ERROR_AUDIO -> "audio_error"
                     SpeechRecognizer.ERROR_NETWORK -> "network_error"
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "busy"
+                    SpeechRecognizer.ERROR_CLIENT -> "client_error"
                     else -> "error_$error"
                 }
                 webView.evaluateJavascript("onSpeechError('$errorMessage')", null)
@@ -272,6 +294,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResults(results: Bundle?) {
                 isListening = false
+                // Destroy recognizer after results to ensure clean state
+                speechRecognizer?.destroy()
+                speechRecognizer = null
+
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
                     val jsonArray = JSONArray(matches)
@@ -302,6 +328,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopListening() {
         speechRecognizer?.stopListening()
+        speechRecognizer?.destroy()
+        speechRecognizer = null
         isListening = false
         webView.evaluateJavascript("onSpeechStop()", null)
     }

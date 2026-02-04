@@ -28,8 +28,12 @@
 
     <!-- Setup Page (First Time or Edit Mode) -->
     <div id="page-setup" class="page setup-page">
+        <!-- Back button row (separate from header) -->
+        <div id="setup-back-row" class="setup-back-row" style="display: none;">
+            <button class="setup-back-btn" onclick="cancelSettings()">← <span data-i18n="back">Retour</span></button>
+        </div>
+
         <div class="setup-header">
-            <button id="setup-back-btn" class="setup-back-btn" onclick="cancelSettings()" style="display: none;">← <span data-i18n="back">Retour</span></button>
             <div class="setup-icon">⚙️</div>
             <h1 class="setup-title" data-i18n="setupTitle">Parametres</h1>
             <p class="setup-subtitle" data-i18n="setupSubtitle">Personnalise tes histoires</p>
@@ -176,6 +180,7 @@
         </div>
         <div id="generating-text" class="generating-text" data-i18n="readingIdeas">Lecture de vos idees...</div>
         <div id="fun-fact" class="fun-fact"></div>
+        <div class="patience-message" data-i18n="patienceMessage">Merci de patienter, ne quittez pas cette page...</div>
         <div class="progress-bar">
             <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
         </div>

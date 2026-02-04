@@ -5,7 +5,7 @@ INFORMATIONS SUR L'ENFANT :
 - Adapte le vocabulaire, les thèmes et la complexité à cet âge
 
 CONSIGNES STRICTES :
-- L'histoire doit durer environ {duration} minutes à la lecture (environ {word_count} mots)
+- TRÈS IMPORTANT : L'histoire doit contenir AU MINIMUM {word_count} mots pour durer {duration} minutes à la lecture. C'est une exigence absolue. Écris une histoire longue et détaillée.
 - Intègre naturellement ces éléments donnés par les enfants : {keywords}
 - Si des prénoms d'enfants sont fournis ({child_names}), fais-en les héros de l'histoire
 - L'histoire doit avoir un début, un milieu avec une aventure/un défi, et une fin heureuse

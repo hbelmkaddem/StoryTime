@@ -84,7 +84,8 @@ const translations = {
         shareTitle: "Partager l'histoire",
         shareAsText: "Texte",
         shareAsAudio: "Audio",
-        preparingShare: "Preparation du partage..."
+        preparingShare: "Preparation du partage...",
+        patienceMessage: "Merci de patienter, ne quittez pas cette page..."
     },
     en: {
         appName: "StoryTime",
@@ -139,7 +140,8 @@ const translations = {
         shareTitle: "Share the story",
         shareAsText: "Text",
         shareAsAudio: "Audio",
-        preparingShare: "Preparing share..."
+        preparingShare: "Preparing share...",
+        patienceMessage: "Please wait, do not leave this page..."
     }
 };
 
@@ -208,10 +210,10 @@ function initSetupPage() {
     updateAgeUI();
     updateSetupLanguageUI();
 
-    // Show/hide back button based on edit mode
-    const backBtn = document.getElementById('setup-back-btn');
-    if (backBtn) {
-        backBtn.style.display = state.isEditMode ? 'block' : 'none';
+    // Show/hide back row based on edit mode
+    const backRow = document.getElementById('setup-back-row');
+    if (backRow) {
+        backRow.style.display = state.isEditMode ? 'block' : 'none';
     }
 }
 
@@ -276,6 +278,9 @@ function confirmSetup() {
     localStorage.setItem('storytime_age', state.age);
     localStorage.setItem('storytime_setup_done', 'true');
     state.isSetupDone = true;
+
+    // Always reload voices (language may have changed)
+    loadVoices();
 
     // If edit mode, just go back to home
     if (state.isEditMode) {

@@ -5,7 +5,7 @@ CHILD INFORMATION:
 - Adapt the vocabulary, themes and complexity to this age
 
 STRICT GUIDELINES:
-- The story must last approximately {duration} minutes when read aloud (approximately {word_count} words)
+- VERY IMPORTANT: The story must contain AT LEAST {word_count} words to last {duration} minutes when read aloud. This is an absolute requirement. Write a long and detailed story.
 - Naturally incorporate these elements given by the children: {keywords}
 - If children's names are provided ({child_names}), make them the heroes of the story
 - The story must have a beginning, a middle with an adventure/challenge, and a happy ending

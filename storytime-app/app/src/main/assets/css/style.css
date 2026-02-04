@@ -515,12 +515,27 @@ body {
     font-size: 14px;
     opacity: 0.9;
     max-width: 280px;
-    margin: 0 auto 30px;
+    margin: 0 auto 15px;
     min-height: 40px;
     animation: fadeInOut 5s ease-in-out infinite;
 }
 
 @keyframes fadeInOut {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+.patience-message {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    animation: pulse-gentle 2s ease-in-out infinite;
+}
+
+@keyframes pulse-gentle {
     0%, 100% { opacity: 0.7; }
     50% { opacity: 1; }
 }
@@ -930,22 +945,22 @@ body {
 /* Setup Page */
 .setup-page {
     background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
     color: white;
+    padding-top: 20px;
     padding-bottom: 80px;
 }
 
-.setup-header {
-    margin-bottom: 30px;
-    position: relative;
+.setup-back-row {
+    width: 100%;
+    text-align: left;
+    padding: 0 20px;
+    margin-bottom: 10px;
 }
 
 .setup-back-btn {
-    position: absolute;
-    top: 0;
-    left: 0;
     background: rgba(255,255,255,0.2);
     border: none;
     border-radius: 20px;
@@ -958,6 +973,10 @@ body {
 
 .setup-back-btn:active {
     background: rgba(255,255,255,0.3);
+}
+
+.setup-header {
+    margin-bottom: 20px;
 }
 
 .setup-icon {
