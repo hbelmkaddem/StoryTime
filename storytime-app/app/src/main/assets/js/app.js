@@ -9,6 +9,9 @@ const CONFIG = {
 // State
 const state = {
     lang: localStorage.getItem('storytime_lang') || null,
+    gender: localStorage.getItem('storytime_gender') || null,
+    age: parseInt(localStorage.getItem('storytime_age')) || 6,
+    isSetupDone: localStorage.getItem('storytime_setup_done') === 'true',
     keywords: [],
     childNames: '',
     selectedVoice: null,
@@ -67,7 +70,16 @@ const translations = {
         addKeywordTitle: "Ajouter un mot-cle",
         saved: "Histoire sauvegardee !",
         alreadySaved: "Histoire deja sauvegardee",
-        voicePreview: "Ecouter"
+        voicePreview: "Ecouter",
+        setupTitle: "Parametres",
+        setupSubtitle: "Personnalise tes histoires",
+        storyFor: "Histoire pour :",
+        boy: "Garcon",
+        girl: "Fille",
+        childAge: "Age de l'enfant :",
+        years: "ans",
+        storyLanguage: "Langue des histoires :",
+        letsGo: "C'est parti !"
     },
     en: {
         appName: "StoryTime",
@@ -109,7 +121,16 @@ const translations = {
         addKeywordTitle: "Add a keyword",
         saved: "Story saved!",
         alreadySaved: "Story already saved",
-        voicePreview: "Listen"
+        voicePreview: "Listen",
+        setupTitle: "Settings",
+        setupSubtitle: "Customize your stories",
+        storyFor: "Story for:",
+        boy: "Boy",
+        girl: "Girl",
+        childAge: "Child's age:",
+        years: "years",
+        storyLanguage: "Story language:",
+        letsGo: "Let's go!"
     }
 };
 
@@ -120,14 +141,92 @@ function t(key) {
 
 // Initialize app
 function init() {
-    if (state.lang) {
+    if (state.lang && state.isSetupDone) {
         showPage('home');
         loadVoices();
         updateLangButton();
+    } else if (state.lang && !state.isSetupDone) {
+        showPage('setup');
+        initSetupPage();
     } else {
         showPage('language');
     }
     updateUI();
+}
+
+// First time language selection (goes to setup)
+function selectLanguageFirst(lang) {
+    state.lang = lang;
+    localStorage.setItem('storytime_lang', lang);
+    showPage('setup');
+    initSetupPage();
+    updateUI();
+}
+
+// Initialize setup page
+function initSetupPage() {
+    // Set default gender if not set
+    if (!state.gender) {
+        state.gender = 'boy';
+    }
+    updateGenderUI();
+    updateAgeUI();
+    updateSetupLanguageUI();
+}
+
+// Select gender
+function selectGender(gender) {
+    state.gender = gender;
+    updateGenderUI();
+}
+
+// Update gender UI
+function updateGenderUI() {
+    document.querySelectorAll('.gender-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.gender === state.gender);
+    });
+}
+
+// Change age
+function changeAge(delta) {
+    state.age = Math.max(3, Math.min(14, state.age + delta));
+    updateAgeUI();
+}
+
+// Update age UI
+function updateAgeUI() {
+    const display = document.getElementById('age-display');
+    if (display) {
+        display.innerHTML = `${state.age} <span data-i18n="years">${t('years')}</span>`;
+    }
+}
+
+// Select setup language
+function selectSetupLanguage(lang) {
+    state.lang = lang;
+    localStorage.setItem('storytime_lang', lang);
+    updateSetupLanguageUI();
+    updateUI();
+}
+
+// Update setup language UI
+function updateSetupLanguageUI() {
+    document.getElementById('setup-lang-fr')?.classList.toggle('active', state.lang === 'fr');
+    document.getElementById('setup-lang-en')?.classList.toggle('active', state.lang === 'en');
+}
+
+// Confirm setup and go to home
+function confirmSetup() {
+    // Save settings
+    localStorage.setItem('storytime_gender', state.gender);
+    localStorage.setItem('storytime_age', state.age);
+    localStorage.setItem('storytime_setup_done', 'true');
+    state.isSetupDone = true;
+
+    // Go to home
+    loadVoices();
+    showPage('home');
+    updateLangButton();
 }
 
 // Show a specific page
@@ -413,7 +512,9 @@ async function generateStory() {
                 lang: state.lang,
                 voice_id: state.selectedVoice,
                 duration_minutes: state.duration,
-                child_names: childNames.length > 0 ? childNames : null
+                child_names: childNames.length > 0 ? childNames : null,
+                gender: state.gender,
+                age: state.age
             })
         });
 

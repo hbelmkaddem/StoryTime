@@ -24,7 +24,9 @@ async def generate_story_endpoint(request: StoryGenerateRequest):
             keywords=request.keywords,
             lang=request.lang.value,
             duration_minutes=request.duration_minutes,
-            child_names=request.child_names
+            child_names=request.child_names,
+            gender=request.gender.value if request.gender else "boy",
+            age=request.age or 6
         )
 
         title = story_data["title"]

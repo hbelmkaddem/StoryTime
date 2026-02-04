@@ -15,15 +15,71 @@
         <div class="tagline" style="margin-top:-40px; opacity:0.7">Magical Stories for Little Dreamers</div>
 
         <div class="language-buttons">
-            <button class="lang-btn" onclick="selectLanguage('fr')">
+            <button class="lang-btn" onclick="selectLanguageFirst('fr')">
                 <span class="flag">🇫🇷</span>
                 <span>Francais</span>
             </button>
-            <button class="lang-btn" onclick="selectLanguage('en')">
+            <button class="lang-btn" onclick="selectLanguageFirst('en')">
                 <span class="flag">🇬🇧</span>
                 <span>English</span>
             </button>
         </div>
+    </div>
+
+    <!-- Setup Page (First Time Only) -->
+    <div id="page-setup" class="page setup-page">
+        <div class="setup-header">
+            <div class="setup-icon">⚙️</div>
+            <h1 class="setup-title" data-i18n="setupTitle">Parametres</h1>
+            <p class="setup-subtitle" data-i18n="setupSubtitle">Personnalise tes histoires</p>
+        </div>
+
+        <div class="setup-content">
+            <!-- Gender Selection -->
+            <div class="setup-section">
+                <div class="section-label" data-i18n="storyFor">Histoire pour :</div>
+                <div class="gender-options">
+                    <button class="gender-btn" data-gender="boy" onclick="selectGender('boy')">
+                        <span class="gender-icon">👦</span>
+                        <span data-i18n="boy">Garcon</span>
+                    </button>
+                    <button class="gender-btn" data-gender="girl" onclick="selectGender('girl')">
+                        <span class="gender-icon">👧</span>
+                        <span data-i18n="girl">Fille</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Age Selection -->
+            <div class="setup-section">
+                <div class="section-label" data-i18n="childAge">Age de l'enfant :</div>
+                <div class="age-selector">
+                    <button class="age-btn" onclick="changeAge(-1)">−</button>
+                    <span id="age-display" class="age-display">6 <span data-i18n="years">ans</span></span>
+                    <button class="age-btn" onclick="changeAge(1)">+</button>
+                </div>
+                <div class="age-range">3 - 14 <span data-i18n="years">ans</span></div>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="setup-section">
+                <div class="section-label" data-i18n="storyLanguage">Langue des histoires :</div>
+                <div class="setup-lang-options">
+                    <button id="setup-lang-fr" class="setup-lang-btn" onclick="selectSetupLanguage('fr')">
+                        <span class="flag">🇫🇷</span>
+                        <span>Francais</span>
+                    </button>
+                    <button id="setup-lang-en" class="setup-lang-btn" onclick="selectSetupLanguage('en')">
+                        <span class="flag">🇬🇧</span>
+                        <span>English</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <button class="setup-confirm-btn" onclick="confirmSetup()">
+            ✨ <span data-i18n="letsGo">C'est parti !</span>
+        </button>
     </div>
 
     <!-- Home Page -->

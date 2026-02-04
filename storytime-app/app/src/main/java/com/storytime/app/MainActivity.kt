@@ -16,12 +16,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import org.json.JSONArray
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
+    private lateinit var adView: AdView
     private var speechRecognizer: SpeechRecognizer? = null
     private var mediaPlayer: MediaPlayer? = null
     private var isListening = false
@@ -37,7 +41,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setupWebView()
+        setupAdMob()
         checkAudioPermission()
+    }
+
+    private fun setupAdMob() {
+        // Initialize Mobile Ads SDK
+        MobileAds.initialize(this) {}
+
+        // Load banner ad
+        adView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     private fun setupWebView() {
@@ -366,7 +381,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        adView.pause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adView.resume()
+    }
+
     override fun onDestroy() {
+        adView.destroy()
         speechRecognizer?.destroy()
         mediaPlayer?.release()
         super.onDestroy()

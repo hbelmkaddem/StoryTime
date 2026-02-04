@@ -41,14 +41,16 @@ async def generate_story(
     keywords: str,
     lang: str,
     duration_minutes: int,
-    child_names: list[str] | None = None
+    child_names: list[str] | None = None,
+    gender: str = "boy",
+    age: int = 6
 ) -> dict:
     """Generate a story using Gemini API."""
 
     if not GEMINI_API_KEY:
         raise GeminiError("GEMINI_API_KEY not configured")
 
-    prompt = build_story_prompt(keywords, lang, duration_minutes, child_names)
+    prompt = build_story_prompt(keywords, lang, duration_minutes, child_names, gender, age)
 
     async with httpx.AsyncClient() as client:
         try:

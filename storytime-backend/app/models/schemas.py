@@ -26,12 +26,19 @@ class VoicePreviewRequest(BaseModel):
     lang: Language = Language.FR
 
 
+class Gender(str, Enum):
+    BOY = "boy"
+    GIRL = "girl"
+
+
 class StoryGenerateRequest(BaseModel):
     keywords: str
     lang: Language = Language.FR
     voice_id: str = "fr-FR-DeniseNeural"
     duration_minutes: int = Field(default=5, ge=1, le=15)
     child_names: Optional[list[str]] = None
+    gender: Optional[Gender] = Gender.BOY
+    age: Optional[int] = Field(default=6, ge=3, le=14)
 
 
 class StoryResponse(BaseModel):

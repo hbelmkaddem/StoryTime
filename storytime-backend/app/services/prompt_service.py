@@ -24,7 +24,9 @@ def build_story_prompt(
     keywords: str,
     lang: str,
     duration_minutes: int,
-    child_names: list[str] | None = None
+    child_names: list[str] | None = None,
+    gender: str = "boy",
+    age: int = 6
 ) -> str:
     """Build the full prompt for story generation."""
     template = load_prompt(lang)
@@ -34,11 +36,19 @@ def build_story_prompt(
     if lang == "en" and not child_names:
         names_str = "none"
 
+    # Translate gender
+    if lang == "fr":
+        gender_str = "garçon" if gender == "boy" else "fille"
+    else:
+        gender_str = gender
+
     prompt = template.format(
         duration=duration_minutes,
         word_count=word_count,
         keywords=keywords,
-        child_names=names_str
+        child_names=names_str,
+        gender=gender_str,
+        age=age
     )
 
     return prompt
