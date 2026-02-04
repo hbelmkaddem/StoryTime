@@ -85,7 +85,10 @@ const translations = {
         shareAsText: "Texte",
         shareAsAudio: "Audio",
         preparingShare: "Preparation du partage...",
-        patienceMessage: "Merci de patienter, ne quittez pas cette page..."
+        patienceMessage: "Merci de patienter, ne quittez pas cette page...",
+        stepWriting: "Ecriture de l'histoire...",
+        stepAudio: "Generation de l'audio...",
+        stepComplete: "Termine !"
     },
     en: {
         appName: "StoryTime",
@@ -141,7 +144,10 @@ const translations = {
         shareAsText: "Text",
         shareAsAudio: "Audio",
         preparingShare: "Preparing share...",
-        patienceMessage: "Please wait, do not leave this page..."
+        patienceMessage: "Please wait, do not leave this page...",
+        stepWriting: "Writing the story...",
+        stepAudio: "Generating audio...",
+        stepComplete: "Complete!"
     }
 };
 
@@ -579,25 +585,52 @@ function stopFunFacts() {
     }
 }
 
+// Update step UI
+function updateStepUI(stepNumber, status) {
+    const step = document.getElementById(`step-${stepNumber}`);
+    if (!step) return;
+
+    step.classList.remove('pending', 'active', 'completed');
+    step.classList.add(status);
+
+    const icon = step.querySelector('.step-icon');
+    if (icon) {
+        if (status === 'completed') {
+            icon.textContent = '✓';
+        } else if (status === 'active') {
+            icon.textContent = '⏳';
+        } else {
+            icon.textContent = '○';
+        }
+    }
+}
+
+// Reset steps for new generation
+function resetStepsUI() {
+    updateStepUI(1, 'active');
+    updateStepUI(2, 'pending');
+}
+
 // Generate story
 async function generateStory() {
     if (state.keywords.length === 0) return;
 
     showPage('generating');
-    updateGeneratingUI(0, t('readingIdeas'));
+    resetStepsUI();
+    updateGeneratingUI(0, '');
     startFunFacts();
 
     try {
-        // Simulate initial progress
-        await sleep(1500);
-        updateGeneratingUI(20, t('writingStory'));
+        // Step 1: Writing story (active)
+        updateStepUI(1, 'active');
+        updateGeneratingUI(10, '');
 
         // Parse child names
         const childNames = state.childNames.split(',')
             .map(n => n.trim())
             .filter(n => n.length > 0);
 
-        // Call API
+        // Call API (this does both story + audio generation)
         const response = await fetch(`${CONFIG.API_URL}/api/story/generate`, {
             method: 'POST',
             headers: {
@@ -615,16 +648,21 @@ async function generateStory() {
             })
         });
 
-        updateGeneratingUI(70, t('preparingNarration'));
-
         if (!response.ok) {
             throw new Error('API error');
         }
 
+        // Step 1 complete, Step 2 starting (API does both, but we show progress)
+        updateStepUI(1, 'completed');
+        updateStepUI(2, 'active');
+        updateGeneratingUI(70, '');
+
         const story = await response.json();
         state.currentStory = story;
 
-        updateGeneratingUI(100, t('preparingNarration'));
+        // Both steps complete
+        updateStepUI(2, 'completed');
+        updateGeneratingUI(100, '');
         await sleep(500);
 
         stopFunFacts();
@@ -641,8 +679,10 @@ async function generateStory() {
 
 // Update generating UI
 function updateGeneratingUI(progress, text) {
-    document.getElementById('generating-text').textContent = text;
-    document.getElementById('progress-fill').style.width = `${progress}%`;
+    const progressFill = document.getElementById('progress-fill');
+    if (progressFill) {
+        progressFill.style.width = `${progress}%`;
+    }
 }
 
 // Cancel generation

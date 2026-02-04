@@ -505,10 +505,62 @@ body {
     50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
 }
 
-.generating-text {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 15px;
+/* Generation Steps */
+.generation-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 280px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.step.pending {
+    opacity: 0.5;
+}
+
+.step.active {
+    background: rgba(255,255,255,0.3);
+    opacity: 1;
+}
+
+.step.active .step-icon {
+    animation: spin 1s linear infinite;
+}
+
+.step.completed {
+    background: rgba(46, 213, 115, 0.3);
+    opacity: 1;
+}
+
+.step.completed .step-icon::after {
+    content: "✓";
+}
+
+.step-icon {
+    font-size: 18px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.step-text {
+    flex: 1;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .fun-fact {
