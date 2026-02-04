@@ -27,6 +27,10 @@ async def verify_api_key(request: Request, call_next):
     if request.url.path in ["/health", "/docs", "/openapi.json", "/redoc"]:
         return await call_next(request)
 
+    # Skip auth for audio files (MediaPlayer can't send headers)
+    if request.url.path.startswith("/api/story/audio/"):
+        return await call_next(request)
+
     # Skip auth for OPTIONS requests (CORS preflight)
     if request.method == "OPTIONS":
         return await call_next(request)
