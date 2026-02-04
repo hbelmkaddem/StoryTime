@@ -20,7 +20,9 @@ const state = {
     isPlaying: false,
     audioPosition: 0,
     audioDuration: 0,
-    playbackSpeed: 1
+    playbackSpeed: 1,
+    previewAudio: null,
+    isPreviewPlaying: false
 };
 
 // Translations
@@ -64,6 +66,7 @@ const translations = {
         no: "Non",
         addKeywordTitle: "Ajouter un mot-cle",
         saved: "Histoire sauvegardee !",
+        alreadySaved: "Histoire deja sauvegardee",
         voicePreview: "Ecouter"
     },
     en: {
@@ -105,6 +108,7 @@ const translations = {
         no: "No",
         addKeywordTitle: "Add a keyword",
         saved: "Story saved!",
+        alreadySaved: "Story already saved",
         voicePreview: "Listen"
     }
 };
@@ -572,6 +576,13 @@ function toggleText() {
 function saveStory() {
     if (!state.currentStory) return;
 
+    // Check if story already exists (by story_id)
+    const exists = state.savedStories.some(s => s.story_id === state.currentStory.story_id);
+    if (exists) {
+        showToast(t('alreadySaved'), 'info');
+        return;
+    }
+
     const story = {
         ...state.currentStory,
         savedAt: new Date().toISOString(),
@@ -687,6 +698,22 @@ function goBack() {
 async function previewVoice() {
     if (!state.selectedVoice) return;
 
+    const btn = document.getElementById('preview-btn');
+
+    // If already playing, stop it
+    if (state.previewAudio) {
+        state.previewAudio.pause();
+        state.previewAudio = null;
+        state.isPreviewPlaying = false;
+        if (btn) btn.classList.remove('playing');
+        return;
+    }
+
+    // Prevent double-click during loading
+    if (state.isPreviewPlaying) return;
+    state.isPreviewPlaying = true;
+    if (btn) btn.classList.add('loading');
+
     try {
         const response = await fetch(`${CONFIG.API_URL}/api/voices/preview`, {
             method: 'POST',
@@ -703,11 +730,39 @@ async function previewVoice() {
         if (response.ok) {
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
-            audio.play();
+            state.previewAudio = new Audio(url);
+
+            state.previewAudio.onended = () => {
+                state.previewAudio = null;
+                state.isPreviewPlaying = false;
+                if (btn) {
+                    btn.classList.remove('playing');
+                    btn.classList.remove('loading');
+                }
+            };
+
+            state.previewAudio.onerror = () => {
+                state.previewAudio = null;
+                state.isPreviewPlaying = false;
+                if (btn) {
+                    btn.classList.remove('playing');
+                    btn.classList.remove('loading');
+                }
+            };
+
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.classList.add('playing');
+            }
+            state.previewAudio.play();
+        } else {
+            state.isPreviewPlaying = false;
+            if (btn) btn.classList.remove('loading');
         }
     } catch (error) {
         console.error('Error previewing voice:', error);
+        state.isPreviewPlaying = false;
+        if (btn) btn.classList.remove('loading');
     }
 }
 

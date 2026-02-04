@@ -75,8 +75,8 @@
             <select id="voice-select" class="voice-dropdown" onchange="onVoiceChange(this.value)">
                 <!-- Populated by JS -->
             </select>
-            <button class="voice-preview-btn" onclick="previewVoice()">
-                ▶ <span data-i18n="voicePreview">Ecouter</span>
+            <button id="preview-btn" class="voice-preview-btn" onclick="previewVoice()">
+                <span class="preview-icon">▶</span> <span data-i18n="voicePreview">Ecouter</span>
             </button>
         </div>
 
