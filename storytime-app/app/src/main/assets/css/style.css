@@ -342,14 +342,47 @@ body {
 }
 
 .voice-preview-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background: var(--primary);
     color: white;
     border: none;
     border-radius: 10px;
-    padding: 10px 20px;
-    margin-top: 10px;
+    padding: 12px 24px;
+    margin: 15px auto 0;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.voice-preview-btn:active {
+    transform: scale(0.95);
+    background: var(--primary-dark);
+}
+
+.voice-preview-btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.voice-preview-btn.loading .preview-icon {
+    animation: spin 1s linear infinite;
+}
+
+.voice-preview-btn.playing {
+    background: var(--secondary);
+}
+
+.voice-preview-btn.playing .preview-icon::before {
+    content: "⏹";
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Duration Selector */

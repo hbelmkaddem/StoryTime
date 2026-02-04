@@ -123,6 +123,7 @@ function init() {
     if (state.lang) {
         showPage('home');
         loadVoices();
+        updateLangButton();
     } else {
         showPage('language');
     }
@@ -150,6 +151,7 @@ function selectLanguage(lang) {
     loadVoices();
     showPage('home');
     updateUI();
+    updateLangButton();
 }
 
 // Update all UI texts
@@ -666,11 +668,20 @@ function deleteStory(index) {
     }
 }
 
-// Show settings
-function showSettings() {
-    // Simple language change
+// Toggle language with flag
+function toggleLanguage() {
     const newLang = state.lang === 'fr' ? 'en' : 'fr';
     selectLanguage(newLang);
+    updateLangButton();
+}
+
+// Update language toggle button flag
+function updateLangButton() {
+    const btn = document.getElementById('lang-toggle-btn');
+    if (btn) {
+        // Show flag of OTHER language (to switch to)
+        btn.textContent = state.lang === 'fr' ? '🇬🇧' : '🇫🇷';
+    }
 }
 
 // Show toast

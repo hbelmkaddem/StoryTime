@@ -25,6 +25,7 @@ services:
     restart: always
     volumes:
       - stories-data:/tmp/stories
+      - ./prompts:/app/app/prompts
     networks:
       - storytime-network
 
