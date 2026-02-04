@@ -26,9 +26,10 @@
         </div>
     </div>
 
-    <!-- Setup Page (First Time Only) -->
+    <!-- Setup Page (First Time or Edit Mode) -->
     <div id="page-setup" class="page setup-page">
         <div class="setup-header">
+            <button id="setup-back-btn" class="setup-back-btn" onclick="cancelSettings()" style="display: none;">← <span data-i18n="back">Retour</span></button>
             <div class="setup-icon">⚙️</div>
             <h1 class="setup-title" data-i18n="setupTitle">Parametres</h1>
             <p class="setup-subtitle" data-i18n="setupSubtitle">Personnalise tes histoires</p>
@@ -87,7 +88,7 @@
         <div class="header">
             <button class="header-btn" onclick="showLibrary()">📚</button>
             <h1 class="page-title" data-i18n="tellMeStory">Raconte-moi une histoire !</h1>
-            <button id="lang-toggle-btn" class="header-btn" onclick="toggleLanguage()">🇫🇷</button>
+            <button class="header-btn" onclick="showSettingsPage()">⚙️</button>
         </div>
 
         <!-- Record Section -->
@@ -163,8 +164,18 @@
 
     <!-- Generating Page -->
     <div id="page-generating" class="page generating-page">
-        <div class="generating-icon">📖</div>
+        <div class="generating-animation">
+            <div class="floating-icons">
+                <span class="floating-icon">✨</span>
+                <span class="floating-icon">🌟</span>
+                <span class="floating-icon">⭐</span>
+                <span class="floating-icon">💫</span>
+                <span class="floating-icon">🪄</span>
+            </div>
+            <div class="generating-book">📖</div>
+        </div>
         <div id="generating-text" class="generating-text" data-i18n="readingIdeas">Lecture de vos idees...</div>
+        <div id="fun-fact" class="fun-fact"></div>
         <div class="progress-bar">
             <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
         </div>
@@ -249,6 +260,26 @@
             <div class="modal-buttons">
                 <button class="modal-btn secondary" onclick="hideAddKeywordModal()" data-i18n="cancel">Annuler</button>
                 <button class="modal-btn primary" onclick="confirmAddKeyword()" data-i18n="addKeyword">Ajouter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="modal-share" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" data-i18n="shareTitle">Partager l'histoire</h3>
+            <div class="share-options">
+                <button class="share-option-btn" onclick="shareAsText()">
+                    <span class="share-icon">📝</span>
+                    <span data-i18n="shareAsText">Texte</span>
+                </button>
+                <button class="share-option-btn" onclick="shareAsAudio()">
+                    <span class="share-icon">🎵</span>
+                    <span data-i18n="shareAsAudio">Audio</span>
+                </button>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="hideShareModal()" data-i18n="cancel">Annuler</button>
             </div>
         </div>
     </div>

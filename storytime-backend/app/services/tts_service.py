@@ -1,5 +1,8 @@
 import httpx
+import logging
 from app.config import EDGE_TTS_URL
+
+logger = logging.getLogger(__name__)
 
 
 class TTSError(Exception):
@@ -9,6 +12,8 @@ class TTSError(Exception):
 
 async def generate_audio(text: str, voice_id: str, speed: float = 0.9) -> bytes:
     """Generate audio from text using Edge TTS."""
+
+    logger.info(f"Generating audio: voice={voice_id}, text_length={len(text)}")
 
     async with httpx.AsyncClient() as client:
         try:
@@ -28,13 +33,17 @@ async def generate_audio(text: str, voice_id: str, speed: float = 0.9) -> bytes:
             )
 
             if response.status_code != 200:
+                logger.error(f"TTS error: {response.status_code} - {response.text[:500]}")
                 raise TTSError(f"Edge TTS error: {response.status_code} - {response.text}")
 
+            logger.info(f"Audio generated successfully, size={len(response.content)} bytes")
             return response.content
 
         except httpx.TimeoutException:
+            logger.error("TTS timeout")
             raise TTSError("TTS timeout - audio generation took too long")
         except httpx.RequestError as e:
+            logger.error(f"Network error: {str(e)}")
             raise TTSError(f"Network error calling Edge TTS: {str(e)}")
 
 

@@ -1,7 +1,10 @@
 import httpx
 import re
+import logging
 from app.config import GEMINI_API_KEY
 from app.services.prompt_service import build_story_prompt
+
+logger = logging.getLogger(__name__)
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
@@ -50,6 +53,7 @@ async def generate_story(
     if not GEMINI_API_KEY:
         raise GeminiError("GEMINI_API_KEY not configured")
 
+    logger.info(f"Generating story: lang={lang}, keywords={keywords}, gender={gender}, age={age}")
     prompt = build_story_prompt(keywords, lang, duration_minutes, child_names, gender, age)
 
     async with httpx.AsyncClient() as client:
@@ -67,22 +71,34 @@ async def generate_story(
             )
 
             if response.status_code != 200:
+                logger.error(f"Gemini API error: {response.status_code} - {response.text[:500]}")
                 raise GeminiError(f"Gemini API error: {response.status_code} - {response.text}")
 
             data = response.json()
 
             # Extract text from response
             if "candidates" not in data or not data["candidates"]:
+                logger.error(f"No candidates in response: {data}")
                 raise GeminiError("No candidates in Gemini response")
 
             candidate = data["candidates"][0]
+
+            # Check for blocked content
+            if "finishReason" in candidate and candidate["finishReason"] == "SAFETY":
+                logger.error(f"Content blocked by safety filter: {candidate}")
+                raise GeminiError("Story content was blocked by safety filters")
+
             if "content" not in candidate or "parts" not in candidate["content"]:
+                logger.error(f"Invalid response structure: {candidate}")
                 raise GeminiError("Invalid response structure from Gemini")
 
             text = candidate["content"]["parts"][0]["text"]
+            logger.info(f"Story generated successfully, length={len(text)}")
             return parse_story_response(text)
 
         except httpx.TimeoutException:
+            logger.error("Gemini API timeout")
             raise GeminiError("Gemini API timeout - story generation took too long")
         except httpx.RequestError as e:
+            logger.error(f"Network error: {str(e)}")
             raise GeminiError(f"Network error calling Gemini: {str(e)}")

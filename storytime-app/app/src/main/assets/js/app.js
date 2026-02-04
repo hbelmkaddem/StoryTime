@@ -25,7 +25,8 @@ const state = {
     audioDuration: 0,
     playbackSpeed: 1,
     previewAudio: null,
-    isPreviewPlaying: false
+    isPreviewPlaying: false,
+    isEditMode: false
 };
 
 // Translations
@@ -79,7 +80,11 @@ const translations = {
         childAge: "Age de l'enfant :",
         years: "ans",
         storyLanguage: "Langue des histoires :",
-        letsGo: "C'est parti !"
+        letsGo: "C'est parti !",
+        shareTitle: "Partager l'histoire",
+        shareAsText: "Texte",
+        shareAsAudio: "Audio",
+        preparingShare: "Preparation du partage..."
     },
     en: {
         appName: "StoryTime",
@@ -130,9 +135,39 @@ const translations = {
         childAge: "Child's age:",
         years: "years",
         storyLanguage: "Story language:",
-        letsGo: "Let's go!"
+        letsGo: "Let's go!",
+        shareTitle: "Share the story",
+        shareAsText: "Text",
+        shareAsAudio: "Audio",
+        preparingShare: "Preparing share..."
     }
 };
+
+// Fun facts shown during generation
+const funFacts = {
+    fr: [
+        "Saviez-vous que les enfants qui ecoutent des histoires developpent un vocabulaire plus riche ?",
+        "Les contes de fees existent depuis plus de 4000 ans !",
+        "Lire une histoire avant de dormir ameliore la qualite du sommeil.",
+        "Les histoires aident les enfants a developper leur empathie.",
+        "Le premier livre pour enfants date de 1658 !",
+        "Les histoires stimulent l'imagination et la creativite.",
+        "Ecouter des histoires renforce le lien parent-enfant.",
+        "Les enfants retiennent mieux les informations sous forme d'histoire."
+    ],
+    en: [
+        "Did you know? Children who listen to stories develop a richer vocabulary!",
+        "Fairy tales have existed for over 4000 years!",
+        "Reading a story before bed improves sleep quality.",
+        "Stories help children develop empathy.",
+        "The first children's book dates back to 1658!",
+        "Stories stimulate imagination and creativity.",
+        "Listening to stories strengthens the parent-child bond.",
+        "Children remember information better when it's in story form."
+    ]
+};
+
+let funFactInterval = null;
 
 // Get translation
 function t(key) {
@@ -172,6 +207,25 @@ function initSetupPage() {
     updateGenderUI();
     updateAgeUI();
     updateSetupLanguageUI();
+
+    // Show/hide back button based on edit mode
+    const backBtn = document.getElementById('setup-back-btn');
+    if (backBtn) {
+        backBtn.style.display = state.isEditMode ? 'block' : 'none';
+    }
+}
+
+// Show settings page from home (edit mode)
+function showSettingsPage() {
+    state.isEditMode = true;
+    showPage('setup');
+    initSetupPage();
+}
+
+// Cancel settings and go back to home
+function cancelSettings() {
+    state.isEditMode = false;
+    showPage('home');
 }
 
 // Select gender
@@ -223,7 +277,14 @@ function confirmSetup() {
     localStorage.setItem('storytime_setup_done', 'true');
     state.isSetupDone = true;
 
-    // Go to home
+    // If edit mode, just go back to home
+    if (state.isEditMode) {
+        state.isEditMode = false;
+        showPage('home');
+        return;
+    }
+
+    // First time setup - load voices and go to home
     loadVoices();
     showPage('home');
     updateLangButton();
@@ -483,12 +544,43 @@ function confirmAddKeyword() {
     hideAddKeywordModal();
 }
 
+// Start fun facts rotation
+function startFunFacts() {
+    const facts = funFacts[state.lang] || funFacts.en;
+    let currentIndex = Math.floor(Math.random() * facts.length);
+
+    const factEl = document.getElementById('fun-fact');
+    if (factEl) {
+        factEl.textContent = facts[currentIndex];
+    }
+
+    funFactInterval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % facts.length;
+        if (factEl) {
+            factEl.style.opacity = '0';
+            setTimeout(() => {
+                factEl.textContent = facts[currentIndex];
+                factEl.style.opacity = '0.9';
+            }, 300);
+        }
+    }, 5000);
+}
+
+// Stop fun facts rotation
+function stopFunFacts() {
+    if (funFactInterval) {
+        clearInterval(funFactInterval);
+        funFactInterval = null;
+    }
+}
+
 // Generate story
 async function generateStory() {
     if (state.keywords.length === 0) return;
 
     showPage('generating');
     updateGeneratingUI(0, t('readingIdeas'));
+    startFunFacts();
 
     try {
         // Simulate initial progress
@@ -530,11 +622,13 @@ async function generateStory() {
         updateGeneratingUI(100, t('preparingNarration'));
         await sleep(500);
 
+        stopFunFacts();
         // Show player
         showPlayer();
 
     } catch (error) {
         console.error('Error generating story:', error);
+        stopFunFacts();
         showToast(t('errorMessage'), 'error');
         showPage('home');
     }
@@ -548,6 +642,7 @@ function updateGeneratingUI(progress, text) {
 
 // Cancel generation
 function cancelGeneration() {
+    stopFunFacts();
     showPage('home');
 }
 
@@ -699,12 +794,43 @@ function saveStory() {
     showToast(t('saved'), 'success');
 }
 
-// Share story
+// Share story - show options modal
 function shareStory() {
     if (!state.currentStory) return;
+    showShareModal();
+}
 
+// Show share modal with options
+function showShareModal() {
+    const modal = document.getElementById('modal-share');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+// Hide share modal
+function hideShareModal() {
+    const modal = document.getElementById('modal-share');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Share story as text
+function shareAsText() {
+    hideShareModal();
+    if (!state.currentStory) return;
     const text = `${state.currentStory.title}\n\n${state.currentStory.text}`;
     Android.shareText(text);
+}
+
+// Share story as audio
+function shareAsAudio() {
+    hideShareModal();
+    if (!state.currentStory) return;
+    const audioUrl = `${CONFIG.API_URL}${state.currentStory.audio_url}`;
+    Android.shareAudio(audioUrl, state.currentStory.title);
+    showToast(t('preparingShare'), 'info');
 }
 
 // New story

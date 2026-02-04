@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -16,11 +17,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import org.json.JSONArray
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 import java.util.Locale
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -190,6 +196,13 @@ class MainActivity : AppCompatActivity() {
                 shareIntent.type = "text/plain"
                 shareIntent.putExtra(Intent.EXTRA_TEXT, text)
                 startActivity(Intent.createChooser(shareIntent, "Partager"))
+            }
+        }
+
+        @JavascriptInterface
+        fun shareAudio(audioUrl: String, title: String) {
+            runOnUiThread {
+                shareAudioFile(audioUrl, title)
             }
         }
 
@@ -365,6 +378,50 @@ class MainActivity : AppCompatActivity() {
             }
         }
         handler.post(runnable)
+    }
+
+    // Share audio file
+    private fun shareAudioFile(audioUrl: String, title: String) {
+        thread {
+            try {
+                // Download audio file to cache directory
+                val cacheDir = File(cacheDir, "shared_audio")
+                cacheDir.mkdirs()
+
+                val safeTitle = title.replace(Regex("[^a-zA-Z0-9\\s]"), "").take(30)
+                val audioFile = File(cacheDir, "${safeTitle}.mp3")
+
+                URL(audioUrl).openStream().use { input ->
+                    FileOutputStream(audioFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                runOnUiThread {
+                    try {
+                        val uri = FileProvider.getUriForFile(
+                            this,
+                            "${packageName}.fileprovider",
+                            audioFile
+                        )
+
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "audio/mpeg"
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            putExtra(Intent.EXTRA_SUBJECT, title)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        startActivity(Intent.createChooser(shareIntent, "Partager l'histoire"))
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Erreur de partage: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, "Erreur de telechargement: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     // Handle back button
