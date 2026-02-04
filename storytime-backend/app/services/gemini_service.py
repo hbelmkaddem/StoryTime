@@ -67,7 +67,7 @@ async def generate_story(
                         "maxOutputTokens": 8192
                     }
                 },
-                timeout=60.0
+                timeout=120.0  # Increased for longer stories
             )
 
             if response.status_code != 200:
