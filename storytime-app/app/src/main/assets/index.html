@@ -4,9 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>StoryTime</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+    <!-- Onboarding Pages -->
+    <div id="page-onboarding" class="page onboarding-page">
+        <div class="onboarding-container">
+            <!-- Slide 1 -->
+            <div class="onboarding-slide active" data-slide="1">
+                <div class="onboarding-illustration">✨📖✨</div>
+                <h2 class="onboarding-title" data-i18n="onboarding1Title">Bienvenue sur StoryTime !</h2>
+                <p class="onboarding-text" data-i18n="onboarding1Text">Des histoires magiques personnalisées pour votre enfant, générées en quelques secondes.</p>
+            </div>
+            <!-- Slide 2 -->
+            <div class="onboarding-slide" data-slide="2">
+                <div class="onboarding-illustration">🎤🌟💬</div>
+                <h2 class="onboarding-title" data-i18n="onboarding2Title">Parle, et la magie opère !</h2>
+                <p class="onboarding-text" data-i18n="onboarding2Text">Dis simplement ce que tu veux dans ton histoire : dragons, princesses, pirates... L'IA crée une aventure unique !</p>
+            </div>
+            <!-- Slide 3 -->
+            <div class="onboarding-slide" data-slide="3">
+                <div class="onboarding-illustration">🎧😴💤</div>
+                <h2 class="onboarding-title" data-i18n="onboarding3Title">Écoute et rêve</h2>
+                <p class="onboarding-text" data-i18n="onboarding3Text">Choisis la voix du narrateur et la durée. Parfait pour le coucher ou les longs trajets !</p>
+            </div>
+        </div>
+        <div class="onboarding-dots">
+            <span class="dot active" data-dot="1"></span>
+            <span class="dot" data-dot="2"></span>
+            <span class="dot" data-dot="3"></span>
+        </div>
+        <div class="onboarding-actions">
+            <button class="onboarding-skip" onclick="skipOnboarding()" data-i18n="skip">Passer</button>
+            <button class="onboarding-next" onclick="nextOnboardingSlide()" data-i18n="next">Suivant</button>
+        </div>
+    </div>
 
     <!-- Language Selection Page -->
     <div id="page-language" class="page language-page">
@@ -133,9 +170,13 @@
         <!-- Voice Selector -->
         <div class="voice-selector">
             <div class="section-label" data-i18n="whoTells">Qui raconte l'histoire ?</div>
-            <select id="voice-select" class="voice-dropdown" onchange="onVoiceChange(this.value)">
+            <div id="voice-grid" class="voice-grid">
                 <!-- Populated by JS -->
-            </select>
+            </div>
+            <div id="voice-info" class="voice-info">
+                <span id="voice-name" class="voice-name"></span>
+                <span id="voice-desc" class="voice-desc"></span>
+            </div>
             <button id="preview-btn" class="voice-preview-btn" onclick="previewVoice()">
                 <span class="preview-icon">▶</span> <span data-i18n="voicePreview">Ecouter</span>
             </button>
@@ -168,15 +209,15 @@
 
     <!-- Generating Page -->
     <div id="page-generating" class="page generating-page">
-        <div class="generating-animation">
-            <div class="floating-icons">
-                <span class="floating-icon">✨</span>
-                <span class="floating-icon">🌟</span>
-                <span class="floating-icon">⭐</span>
-                <span class="floating-icon">💫</span>
-                <span class="floating-icon">🪄</span>
+        <!-- Mini-game: Catch Stars -->
+        <div id="star-game" class="star-game">
+            <div class="star-game-header">
+                <span class="star-game-title" data-i18n="catchStars">Attrape les étoiles !</span>
+                <span id="star-score" class="star-score">⭐ 0</span>
             </div>
-            <div class="generating-book">📖</div>
+            <div id="star-game-area" class="star-game-area">
+                <!-- Stars will be spawned here -->
+            </div>
         </div>
 
         <!-- Steps Progress -->
@@ -191,8 +232,6 @@
             </div>
         </div>
 
-        <div id="fun-fact" class="fun-fact"></div>
-        <div class="patience-message" data-i18n="patienceMessage">Merci de patienter, ne quittez pas cette page...</div>
         <div class="progress-bar">
             <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
         </div>
@@ -215,7 +254,7 @@
             <button id="text-toggle-btn" class="text-toggle-btn" onclick="toggleText()" data-i18n="showText">Voir le texte</button>
         </div>
 
-        <div id="story-text-container" class="story-text-container" style="display:none">
+        <div id="story-text-container" class="story-text-container">
             <div id="story-text" class="story-text"></div>
         </div>
 

@@ -12,6 +12,8 @@ const state = {
     gender: localStorage.getItem('storytime_gender') || null,
     age: parseInt(localStorage.getItem('storytime_age')) || 6,
     isSetupDone: localStorage.getItem('storytime_setup_done') === 'true',
+    isOnboardingDone: localStorage.getItem('storytime_onboarding_done') === 'true',
+    currentOnboardingSlide: 1,
     keywords: [],
     childNames: '',
     selectedVoice: null,
@@ -26,7 +28,12 @@ const state = {
     playbackSpeed: 1,
     previewAudio: null,
     isPreviewPlaying: false,
-    isEditMode: false
+    isEditMode: false,
+    storySentences: [],
+    currentSentenceIndex: 0,
+    textVisible: true,
+    starGameScore: 0,
+    starGameInterval: null
 };
 
 // Translations
@@ -88,7 +95,17 @@ const translations = {
         patienceMessage: "Merci de patienter, ne quittez pas cette page...",
         stepWriting: "Ecriture de l'histoire...",
         stepAudio: "Generation de l'audio...",
-        stepComplete: "Termine !"
+        stepComplete: "Termine !",
+        skip: "Passer",
+        next: "Suivant",
+        start: "Commencer",
+        onboarding1Title: "Bienvenue sur StoryTime !",
+        onboarding1Text: "Des histoires magiques personnalisées pour votre enfant, générées en quelques secondes.",
+        onboarding2Title: "Parle, et la magie opère !",
+        onboarding2Text: "Dis simplement ce que tu veux dans ton histoire : dragons, princesses, pirates... L'IA crée une aventure unique !",
+        onboarding3Title: "Écoute et rêve",
+        onboarding3Text: "Choisis la voix du narrateur et la durée. Parfait pour le coucher ou les longs trajets !",
+        catchStars: "Attrape les étoiles !"
     },
     en: {
         appName: "StoryTime",
@@ -147,7 +164,17 @@ const translations = {
         patienceMessage: "Please wait, do not leave this page...",
         stepWriting: "Writing the story...",
         stepAudio: "Generating audio...",
-        stepComplete: "Complete!"
+        stepComplete: "Complete!",
+        skip: "Skip",
+        next: "Next",
+        start: "Start",
+        onboarding1Title: "Welcome to StoryTime!",
+        onboarding1Text: "Personalized magical stories for your child, generated in seconds.",
+        onboarding2Title: "Speak, and the magic happens!",
+        onboarding2Text: "Just say what you want in your story: dragons, princesses, pirates... AI creates a unique adventure!",
+        onboarding3Title: "Listen and dream",
+        onboarding3Text: "Choose the narrator's voice and duration. Perfect for bedtime or long trips!",
+        catchStars: "Catch the stars!"
     }
 };
 
@@ -184,6 +211,12 @@ function t(key) {
 
 // Initialize app
 function init() {
+    // Check if onboarding is done
+    if (!state.isOnboardingDone) {
+        showPage('onboarding');
+        return;
+    }
+
     if (state.lang && state.isSetupDone) {
         showPage('home');
         loadVoices();
@@ -195,6 +228,59 @@ function init() {
         showPage('language');
     }
     updateUI();
+}
+
+// Onboarding functions
+function nextOnboardingSlide() {
+    if (state.currentOnboardingSlide < 3) {
+        state.currentOnboardingSlide++;
+        updateOnboardingUI();
+    } else {
+        completeOnboarding();
+    }
+}
+
+function skipOnboarding() {
+    completeOnboarding();
+}
+
+function goToOnboardingSlide(slideNum) {
+    state.currentOnboardingSlide = slideNum;
+    updateOnboardingUI();
+}
+
+function updateOnboardingUI() {
+    // Update slides
+    document.querySelectorAll('.onboarding-slide').forEach(slide => {
+        slide.classList.remove('active');
+        if (parseInt(slide.dataset.slide) === state.currentOnboardingSlide) {
+            slide.classList.add('active');
+        }
+    });
+
+    // Update dots
+    document.querySelectorAll('.onboarding-dots .dot').forEach(dot => {
+        dot.classList.remove('active');
+        if (parseInt(dot.dataset.dot) === state.currentOnboardingSlide) {
+            dot.classList.add('active');
+        }
+    });
+
+    // Update button text on last slide
+    const nextBtn = document.querySelector('.onboarding-next');
+    if (nextBtn) {
+        if (state.currentOnboardingSlide === 3) {
+            nextBtn.textContent = t('start') || 'Commencer';
+        } else {
+            nextBtn.textContent = t('next') || 'Suivant';
+        }
+    }
+}
+
+function completeOnboarding() {
+    state.isOnboardingDone = true;
+    localStorage.setItem('storytime_onboarding_done', 'true');
+    showPage('language');
 }
 
 // First time language selection (goes to setup)
@@ -376,29 +462,67 @@ async function loadVoices() {
 function getDefaultVoices() {
     if (state.lang === 'en') {
         return [
-            { id: 'en-US-JennyNeural', name: 'The Fairy', description: 'Warm and gentle voice' },
-            { id: 'en-US-GuyNeural', name: 'The Wizard', description: 'Deep narrator voice' },
-            { id: 'en-US-AnaNeural', name: 'The Little One', description: 'Young and cheerful voice' }
+            { id: 'en-US-JennyNeural', name: 'The Fairy', description: 'Warm and gentle voice', avatar: '🧚' },
+            { id: 'en-US-GuyNeural', name: 'The Wizard', description: 'Deep narrator voice', avatar: '🧙' },
+            { id: 'en-US-AnaNeural', name: 'The Little One', description: 'Young and cheerful voice', avatar: '👧' },
+            { id: 'en-US-AriaNeural', name: 'The Princess', description: 'Elegant and dreamy voice', avatar: '👸' },
+            { id: 'en-US-ChristopherNeural', name: 'The Knight', description: 'Brave and adventurous voice', avatar: '🤴' },
+            { id: 'en-US-MichelleNeural', name: 'The Grandma', description: 'Warm and comforting voice', avatar: '👵' }
         ];
     }
     return [
-        { id: 'fr-FR-DeniseNeural', name: 'La Fee', description: 'Voix douce et chaleureuse' },
-        { id: 'fr-FR-HenriNeural', name: 'Le Sage', description: 'Voix grave et rassurante' },
-        { id: 'fr-FR-EloiseNeural', name: 'La Petite', description: 'Voix jeune et enjouee' }
+        { id: 'fr-FR-DeniseNeural', name: 'La Fée', description: 'Voix douce et chaleureuse', avatar: '🧚' },
+        { id: 'fr-FR-HenriNeural', name: 'Le Sage', description: 'Voix grave et rassurante', avatar: '🧙' },
+        { id: 'fr-FR-EloiseNeural', name: 'La Petite', description: 'Voix jeune et enjouée', avatar: '👧' },
+        { id: 'fr-FR-BrigitteNeural', name: 'La Princesse', description: 'Voix élégante et rêveuse', avatar: '👸' },
+        { id: 'fr-FR-AlainNeural', name: 'Le Chevalier', description: 'Voix brave et aventureuse', avatar: '🤴' },
+        { id: 'fr-FR-JacquelineNeural', name: 'Mamie', description: 'Voix chaude et réconfortante', avatar: '👵' }
     ];
 }
 
-// Update voices dropdown
+// Update voices grid
 function updateVoicesUI() {
-    const select = document.getElementById('voice-select');
-    if (!select) return;
+    const grid = document.getElementById('voice-grid');
+    if (!grid) return;
 
-    select.innerHTML = state.voices.map(voice =>
-        `<option value="${voice.id}">${voice.name} - ${voice.description}</option>`
+    grid.innerHTML = state.voices.map(voice =>
+        `<div class="voice-avatar ${state.selectedVoice === voice.id ? 'active' : ''}"
+             data-voice-id="${voice.id}"
+             onclick="selectVoice('${voice.id}')">
+            <span class="voice-avatar-emoji">${voice.avatar || '🎤'}</span>
+            <span class="voice-avatar-name">${voice.name}</span>
+        </div>`
     ).join('');
 
-    if (state.selectedVoice) {
-        select.value = state.selectedVoice;
+    // Update voice info
+    updateVoiceInfo();
+}
+
+// Select voice
+function selectVoice(voiceId) {
+    state.selectedVoice = voiceId;
+
+    // Update avatar selection UI
+    document.querySelectorAll('.voice-avatar').forEach(avatar => {
+        avatar.classList.remove('active');
+        if (avatar.dataset.voiceId === voiceId) {
+            avatar.classList.add('active');
+        }
+    });
+
+    // Update voice info
+    updateVoiceInfo();
+}
+
+// Update voice info display
+function updateVoiceInfo() {
+    const voice = state.voices.find(v => v.id === state.selectedVoice);
+    const nameEl = document.getElementById('voice-name');
+    const descEl = document.getElementById('voice-desc');
+
+    if (voice && nameEl && descEl) {
+        nameEl.textContent = voice.name;
+        descEl.textContent = voice.description;
     }
 }
 
@@ -463,9 +587,9 @@ function updateGenerateButton() {
     }
 }
 
-// Voice change handler
+// Voice change handler (for backwards compatibility)
 function onVoiceChange(voiceId) {
-    state.selectedVoice = voiceId;
+    selectVoice(voiceId);
 }
 
 // Child names change handler
@@ -585,6 +709,113 @@ function stopFunFacts() {
     }
 }
 
+// Star Game Functions
+function startStarGame() {
+    state.starGameScore = 0;
+    updateStarScore();
+
+    // Spawn stars every 800ms
+    state.starGameInterval = setInterval(spawnStar, 800);
+}
+
+function stopStarGame() {
+    if (state.starGameInterval) {
+        clearInterval(state.starGameInterval);
+        state.starGameInterval = null;
+    }
+    // Clear game area
+    const gameArea = document.getElementById('star-game-area');
+    if (gameArea) {
+        gameArea.innerHTML = '';
+    }
+}
+
+function spawnStar() {
+    const gameArea = document.getElementById('star-game-area');
+    if (!gameArea) return;
+
+    const star = document.createElement('span');
+    star.className = 'game-star';
+
+    // Random star emoji
+    const stars = ['⭐', '🌟', '✨', '💫'];
+    star.textContent = stars[Math.floor(Math.random() * stars.length)];
+
+    // Random horizontal position
+    const maxX = gameArea.offsetWidth - 40;
+    const randomX = Math.floor(Math.random() * maxX);
+    star.style.left = randomX + 'px';
+
+    // Random fall duration (2-4 seconds)
+    const duration = 2 + Math.random() * 2;
+    star.style.animationDuration = duration + 's';
+
+    // Tap handler
+    star.addEventListener('click', (e) => catchStar(e, star));
+    star.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        catchStar(e, star);
+    }, { passive: false });
+
+    gameArea.appendChild(star);
+
+    // Remove star after animation
+    setTimeout(() => {
+        if (star.parentNode) {
+            star.remove();
+        }
+    }, duration * 1000);
+}
+
+function catchStar(event, star) {
+    if (star.classList.contains('caught')) return;
+
+    star.classList.add('caught');
+    state.starGameScore++;
+    updateStarScore();
+
+    // Create burst effect
+    createStarBurst(star);
+
+    // Remove star after catch animation
+    setTimeout(() => star.remove(), 300);
+}
+
+function createStarBurst(star) {
+    const gameArea = document.getElementById('star-game-area');
+    if (!gameArea) return;
+
+    const rect = star.getBoundingClientRect();
+    const areaRect = gameArea.getBoundingClientRect();
+    const x = rect.left - areaRect.left + rect.width / 2;
+    const y = rect.top - areaRect.top + rect.height / 2;
+
+    const particles = ['✨', '⭐', '💫'];
+    for (let i = 0; i < 5; i++) {
+        const particle = document.createElement('span');
+        particle.className = 'star-burst';
+        particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+
+        // Random direction
+        const angle = (Math.PI * 2 / 5) * i;
+        const distance = 30 + Math.random() * 20;
+        particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+        particle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+
+        gameArea.appendChild(particle);
+        setTimeout(() => particle.remove(), 500);
+    }
+}
+
+function updateStarScore() {
+    const scoreEl = document.getElementById('star-score');
+    if (scoreEl) {
+        scoreEl.textContent = `⭐ ${state.starGameScore}`;
+    }
+}
+
 // Update step UI
 function updateStepUI(stepNumber, status) {
     const step = document.getElementById(`step-${stepNumber}`);
@@ -618,7 +849,7 @@ async function generateStory() {
     showPage('generating');
     resetStepsUI();
     updateGeneratingUI(0, '');
-    startFunFacts();
+    startStarGame();
 
     try {
         // Step 1: Writing story (active)
@@ -665,13 +896,13 @@ async function generateStory() {
         updateGeneratingUI(100, '');
         await sleep(500);
 
-        stopFunFacts();
+        stopStarGame();
         // Show player
         showPlayer();
 
     } catch (error) {
         console.error('Error generating story:', error);
-        stopFunFacts();
+        stopStarGame();
         showToast(t('errorMessage'), 'error');
         showPage('home');
     }
@@ -687,7 +918,7 @@ function updateGeneratingUI(progress, text) {
 
 // Cancel generation
 function cancelGeneration() {
-    stopFunFacts();
+    stopStarGame();
     showPage('home');
 }
 
@@ -696,11 +927,77 @@ function showPlayer() {
     showPage('player');
 
     document.getElementById('story-title').textContent = state.currentStory.title;
-    document.getElementById('story-text').textContent = state.currentStory.text;
+
+    // Split text into sentences for karaoke effect
+    initStorySentences(state.currentStory.text);
+
+    // Reset text visibility
+    state.textVisible = true;
+    updateTextToggleUI();
 
     // Start playing audio
     const audioUrl = `${CONFIG.API_URL}${state.currentStory.audio_url}`;
     Android.playAudio(audioUrl);
+}
+
+// Initialize story sentences for karaoke effect
+function initStorySentences(text) {
+    // Split by sentence-ending punctuation, keeping the punctuation
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    state.storySentences = sentences.map(s => s.trim()).filter(s => s.length > 0);
+    state.currentSentenceIndex = 0;
+
+    // Render sentences as spans
+    const container = document.getElementById('story-text');
+    container.innerHTML = state.storySentences.map((sentence, index) =>
+        `<span class="story-sentence" data-index="${index}">${sentence} </span>`
+    ).join('');
+
+    // Highlight first sentence
+    updateSentenceHighlight();
+}
+
+// Update sentence highlight based on audio position
+function updateSentenceHighlight() {
+    document.querySelectorAll('.story-sentence').forEach((el, index) => {
+        el.classList.remove('active', 'past');
+        if (index < state.currentSentenceIndex) {
+            el.classList.add('past');
+        } else if (index === state.currentSentenceIndex) {
+            el.classList.add('active');
+            // Auto-scroll to active sentence
+            scrollToActiveSentence(el);
+        }
+    });
+}
+
+// Scroll to keep active sentence visible
+function scrollToActiveSentence(element) {
+    const container = document.getElementById('story-text-container');
+    if (!container || !element) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+
+    // Check if element is outside visible area
+    if (elementRect.top < containerRect.top || elementRect.bottom > containerRect.bottom) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Calculate current sentence based on audio position
+function calculateCurrentSentence(position, duration) {
+    if (duration <= 0 || state.storySentences.length === 0) return;
+
+    // Estimate: each sentence takes roughly equal time
+    const progress = position / duration;
+    const estimatedIndex = Math.floor(progress * state.storySentences.length);
+    const newIndex = Math.min(estimatedIndex, state.storySentences.length - 1);
+
+    if (newIndex !== state.currentSentenceIndex) {
+        state.currentSentenceIndex = newIndex;
+        updateSentenceHighlight();
+    }
 }
 
 // Audio callbacks
@@ -736,6 +1033,8 @@ function onAudioProgress(position, duration) {
     state.audioPosition = position;
     state.audioDuration = duration;
     updateProgressUI();
+    // Update sentence highlight for karaoke effect
+    calculateCurrentSentence(position, duration);
 }
 
 function onAudioError(error) {
@@ -803,14 +1102,20 @@ function setSpeed(speed) {
 
 // Toggle story text visibility
 function toggleText() {
+    state.textVisible = !state.textVisible;
+    updateTextToggleUI();
+}
+
+// Update text toggle button and container visibility
+function updateTextToggleUI() {
     const container = document.getElementById('story-text-container');
     const btn = document.getElementById('text-toggle-btn');
 
-    if (container.style.display === 'none') {
-        container.style.display = 'block';
+    if (state.textVisible) {
+        container.classList.remove('collapsed');
         btn.textContent = t('hideText');
     } else {
-        container.style.display = 'none';
+        container.classList.add('collapsed');
         btn.textContent = t('showText');
     }
 }
