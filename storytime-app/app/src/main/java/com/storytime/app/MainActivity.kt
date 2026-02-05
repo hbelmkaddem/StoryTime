@@ -25,6 +25,7 @@ import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import android.util.Log
 import java.util.Locale
 import kotlin.concurrent.thread
 
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val PERMISSION_REQUEST_RECORD_AUDIO = 1001
+        private const val TAG = "StoryTime"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -356,35 +358,62 @@ class MainActivity : AppCompatActivity() {
 
     // Audio Player - Download to cache first for reliability with large files
     private fun playAudioFile(url: String) {
+        Log.d(TAG, "playAudioFile called with URL: $url")
+
         thread {
             try {
                 // Download audio to cache for reliable playback
                 val cacheDir = File(cacheDir, "audio_cache")
                 cacheDir.mkdirs()
+                Log.d(TAG, "Cache dir: ${cacheDir.absolutePath}")
 
                 // Use hash of URL as filename
                 val fileName = "audio_${url.hashCode()}.mp3"
                 val audioFile = File(cacheDir, fileName)
+                Log.d(TAG, "Audio file: ${audioFile.absolutePath}")
 
                 // Download if not already cached
                 if (!audioFile.exists() || audioFile.length() == 0L) {
+                    Log.d(TAG, "Starting download...")
                     runOnUiThread {
                         webView.evaluateJavascript("console.log('Downloading audio...')", null)
                     }
 
-                    val connection = URL(url).openConnection()
-                    connection.connectTimeout = 30000
-                    connection.readTimeout = 60000
+                    val connection = URL(url).openConnection() as java.net.HttpURLConnection
+                    connection.connectTimeout = 60000  // 60 seconds
+                    connection.readTimeout = 180000    // 3 minutes for large files
+                    connection.setRequestProperty("Connection", "close")
                     connection.connect()
 
-                    connection.getInputStream().use { input ->
+                    val responseCode = connection.responseCode
+                    Log.d(TAG, "HTTP Response code: $responseCode")
+
+                    if (responseCode != 200) {
+                        throw Exception("HTTP error: $responseCode")
+                    }
+
+                    val contentLength = connection.contentLength
+                    Log.d(TAG, "Content length: $contentLength bytes")
+
+                    var downloadedBytes = 0L
+                    connection.inputStream.use { input ->
                         FileOutputStream(audioFile).use { output ->
-                            input.copyTo(output, bufferSize = 8192)
+                            val buffer = ByteArray(8192)
+                            var bytesRead: Int
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                output.write(buffer, 0, bytesRead)
+                                downloadedBytes += bytesRead
+                            }
                         }
                     }
+                    Log.d(TAG, "Download complete: $downloadedBytes bytes")
+                    connection.disconnect()
+                } else {
+                    Log.d(TAG, "Using cached file: ${audioFile.length()} bytes")
                 }
 
                 // Play from local file
+                Log.d(TAG, "Starting playback from local file")
                 runOnUiThread {
                     try {
                         mediaPlayer?.release()
@@ -392,27 +421,32 @@ class MainActivity : AppCompatActivity() {
                         mediaPlayer = MediaPlayer().apply {
                             setDataSource(audioFile.absolutePath)
                             setOnPreparedListener {
+                                Log.d(TAG, "MediaPlayer prepared, duration: ${it.duration}ms")
                                 isPrepared = true
                                 it.start()
                                 webView.evaluateJavascript("onAudioPlay(${it.duration})", null)
                                 startProgressUpdate()
                             }
                             setOnCompletionListener {
+                                Log.d(TAG, "Playback complete")
                                 webView.evaluateJavascript("onAudioComplete()", null)
                             }
                             setOnErrorListener { _, what, extra ->
+                                Log.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
                                 isPrepared = false
-                                webView.evaluateJavascript("onAudioError('error_${what}_${extra}')", null)
+                                webView.evaluateJavascript("onAudioError('player_error_${what}_${extra}')", null)
                                 true
                             }
                             prepareAsync()
                         }
                     } catch (e: Exception) {
+                        Log.e(TAG, "MediaPlayer setup error", e)
                         isPrepared = false
-                        webView.evaluateJavascript("onAudioError('${e.message?.replace("'", "\\'")}')", null)
+                        webView.evaluateJavascript("onAudioError('setup_error: ${e.message?.replace("'", "\\'")}')", null)
                     }
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Download error", e)
                 runOnUiThread {
                     isPrepared = false
                     webView.evaluateJavascript("onAudioError('download_failed: ${e.message?.replace("'", "\\'")}')", null)
