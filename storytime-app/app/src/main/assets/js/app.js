@@ -17,7 +17,7 @@ const state = {
     keywords: [],
     childNames: '',
     selectedVoice: null,
-    duration: 5,
+    duration: 7,
     voices: [],
     currentStory: null,
     savedStories: JSON.parse(localStorage.getItem('storytime_stories') || '[]'),
@@ -33,6 +33,7 @@ const state = {
     currentSentenceIndex: 0,
     textVisible: true,
     starGameScore: 0,
+    starGameMissed: 0,
     starGameInterval: null
 };
 
@@ -431,7 +432,6 @@ function updateHomeUI() {
     updateUI();
     updateKeywordsUI();
     updateVoicesUI();
-    updateDurationUI();
     updateGenerateButton();
 }
 
@@ -564,19 +564,6 @@ function removeKeyword(index) {
 function clearKeywords() {
     state.keywords = [];
     updateKeywordsUI();
-}
-
-// Update duration UI
-function updateDurationUI() {
-    document.querySelectorAll('.duration-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.duration) === state.duration);
-    });
-}
-
-// Select duration
-function selectDuration(duration) {
-    state.duration = duration;
-    updateDurationUI();
 }
 
 // Update generate button state
@@ -712,10 +699,11 @@ function stopFunFacts() {
 // Star Game Functions
 function startStarGame() {
     state.starGameScore = 0;
+    state.starGameMissed = 0;
     updateStarScore();
 
-    // Spawn stars every 800ms
-    state.starGameInterval = setInterval(spawnStar, 800);
+    // Spawn stars every 700ms
+    state.starGameInterval = setInterval(spawnStar, 700);
 }
 
 function stopStarGame() {
@@ -746,8 +734,8 @@ function spawnStar() {
     const randomX = Math.floor(Math.random() * maxX);
     star.style.left = randomX + 'px';
 
-    // Random fall duration (2-4 seconds)
-    const duration = 2 + Math.random() * 2;
+    // Random fall duration (2.5-4 seconds)
+    const duration = 2.5 + Math.random() * 1.5;
     star.style.animationDuration = duration + 's';
 
     // Tap handler
@@ -759,9 +747,11 @@ function spawnStar() {
 
     gameArea.appendChild(star);
 
-    // Remove star after animation
+    // Remove star after animation (missed if not caught)
     setTimeout(() => {
-        if (star.parentNode) {
+        if (star.parentNode && !star.classList.contains('caught')) {
+            state.starGameMissed++;
+            updateStarScore();
             star.remove();
         }
     }, duration * 1000);
@@ -810,9 +800,13 @@ function createStarBurst(star) {
 }
 
 function updateStarScore() {
-    const scoreEl = document.getElementById('star-score');
-    if (scoreEl) {
-        scoreEl.textContent = `⭐ ${state.starGameScore}`;
+    const caughtEl = document.getElementById('stars-caught');
+    const missedEl = document.getElementById('stars-missed');
+    if (caughtEl) {
+        caughtEl.textContent = state.starGameScore;
+    }
+    if (missedEl) {
+        missedEl.textContent = state.starGameMissed;
     }
 }
 
@@ -861,7 +855,10 @@ async function generateStory() {
             .map(n => n.trim())
             .filter(n => n.length > 0);
 
-        // Call API (this does both story + audio generation)
+        // Call API with timeout (3 minutes)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 180000);
+
         const response = await fetch(`${CONFIG.API_URL}/api/story/generate`, {
             method: 'POST',
             headers: {
@@ -876,8 +873,11 @@ async function generateStory() {
                 child_names: childNames.length > 0 ? childNames : null,
                 gender: state.gender,
                 age: state.age
-            })
+            }),
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
             throw new Error('API error');

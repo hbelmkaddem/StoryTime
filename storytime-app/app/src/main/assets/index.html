@@ -182,25 +182,6 @@
             </button>
         </div>
 
-        <!-- Duration Selector -->
-        <div class="duration-section">
-            <div class="section-label" data-i18n="storyDuration">Duree de l'histoire</div>
-            <div class="duration-options">
-                <button class="duration-btn active" data-duration="5" onclick="selectDuration(5)">
-                    <div class="time">5 <span data-i18n="minutes">min</span></div>
-                    <div class="stars">⭐</div>
-                </button>
-                <button class="duration-btn" data-duration="10" onclick="selectDuration(10)">
-                    <div class="time">10 <span data-i18n="minutes">min</span></div>
-                    <div class="stars">⭐⭐</div>
-                </button>
-                <button class="duration-btn" data-duration="15" onclick="selectDuration(15)">
-                    <div class="time">15 <span data-i18n="minutes">min</span></div>
-                    <div class="stars">⭐⭐⭐</div>
-                </button>
-            </div>
-        </div>
-
         <!-- Generate Button -->
         <button id="generate-btn" class="generate-btn" onclick="generateStory()" disabled>
             ✨ <span data-i18n="createStory">Creer mon histoire !</span>
@@ -213,7 +194,10 @@
         <div id="star-game" class="star-game">
             <div class="star-game-header">
                 <span class="star-game-title" data-i18n="catchStars">Attrape les étoiles !</span>
-                <span id="star-score" class="star-score">⭐ 0</span>
+            </div>
+            <div class="star-game-scores">
+                <span id="star-score" class="star-score caught">⭐ <span id="stars-caught">0</span></span>
+                <span id="star-missed" class="star-score missed">💨 <span id="stars-missed">0</span></span>
             </div>
             <div id="star-game-area" class="star-game-area">
                 <!-- Stars will be spawned here -->
@@ -235,6 +219,9 @@
         <div class="progress-bar">
             <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
         </div>
+
+        <div class="patience-message" data-i18n="patienceMessage">Merci de patienter, ne quittez pas cette page...</div>
+
         <button class="cancel-btn" onclick="cancelGeneration()" data-i18n="cancel">Annuler</button>
     </div>
 
