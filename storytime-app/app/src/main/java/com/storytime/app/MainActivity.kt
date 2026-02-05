@@ -49,6 +49,26 @@ class MainActivity : AppCompatActivity() {
         setupWebView()
         setupAdMob()
         checkAudioPermission()
+        cleanOldAudioCache()
+    }
+
+    // Clean cached audio files older than 7 days
+    private fun cleanOldAudioCache() {
+        thread {
+            try {
+                val cacheDir = File(cacheDir, "audio_cache")
+                if (cacheDir.exists()) {
+                    val sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
+                    cacheDir.listFiles()?.forEach { file ->
+                        if (file.lastModified() < sevenDaysAgo) {
+                            file.delete()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Ignore cache cleanup errors
+            }
+        }
     }
 
     private fun setupAdMob() {
@@ -334,32 +354,70 @@ class MainActivity : AppCompatActivity() {
         webView.evaluateJavascript("onSpeechStop()", null)
     }
 
-    // Audio Player
+    // Audio Player - Download to cache first for reliability with large files
     private fun playAudioFile(url: String) {
-        try {
-            mediaPlayer?.release()
-            isPrepared = false
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(url)
-                setOnPreparedListener {
-                    isPrepared = true
-                    it.start()
-                    webView.evaluateJavascript("onAudioPlay(${it.duration})", null)
-                    startProgressUpdate()
+        thread {
+            try {
+                // Download audio to cache for reliable playback
+                val cacheDir = File(cacheDir, "audio_cache")
+                cacheDir.mkdirs()
+
+                // Use hash of URL as filename
+                val fileName = "audio_${url.hashCode()}.mp3"
+                val audioFile = File(cacheDir, fileName)
+
+                // Download if not already cached
+                if (!audioFile.exists() || audioFile.length() == 0L) {
+                    runOnUiThread {
+                        webView.evaluateJavascript("console.log('Downloading audio...')", null)
+                    }
+
+                    val connection = URL(url).openConnection()
+                    connection.connectTimeout = 30000
+                    connection.readTimeout = 60000
+                    connection.connect()
+
+                    connection.getInputStream().use { input ->
+                        FileOutputStream(audioFile).use { output ->
+                            input.copyTo(output, bufferSize = 8192)
+                        }
+                    }
                 }
-                setOnCompletionListener {
-                    webView.evaluateJavascript("onAudioComplete()", null)
+
+                // Play from local file
+                runOnUiThread {
+                    try {
+                        mediaPlayer?.release()
+                        isPrepared = false
+                        mediaPlayer = MediaPlayer().apply {
+                            setDataSource(audioFile.absolutePath)
+                            setOnPreparedListener {
+                                isPrepared = true
+                                it.start()
+                                webView.evaluateJavascript("onAudioPlay(${it.duration})", null)
+                                startProgressUpdate()
+                            }
+                            setOnCompletionListener {
+                                webView.evaluateJavascript("onAudioComplete()", null)
+                            }
+                            setOnErrorListener { _, what, extra ->
+                                isPrepared = false
+                                webView.evaluateJavascript("onAudioError('error_${what}_${extra}')", null)
+                                true
+                            }
+                            prepareAsync()
+                        }
+                    } catch (e: Exception) {
+                        isPrepared = false
+                        webView.evaluateJavascript("onAudioError('${e.message?.replace("'", "\\'")}')", null)
+                    }
                 }
-                setOnErrorListener { _, what, extra ->
+            } catch (e: Exception) {
+                runOnUiThread {
                     isPrepared = false
-                    webView.evaluateJavascript("onAudioError('error_${what}_${extra}')", null)
-                    true
+                    webView.evaluateJavascript("onAudioError('download_failed: ${e.message?.replace("'", "\\'")}')", null)
                 }
-                prepareAsync()
             }
-        } catch (e: Exception) {
-            isPrepared = false
-            webView.evaluateJavascript("onAudioError('${e.message?.replace("'", "\\'")}')", null)
         }
     }
 
