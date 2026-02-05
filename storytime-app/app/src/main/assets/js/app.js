@@ -106,7 +106,10 @@ const translations = {
         onboarding2Text: "Dis simplement ce que tu veux dans ton histoire : dragons, princesses, pirates... L'IA crée une aventure unique !",
         onboarding3Title: "Écoute et rêve",
         onboarding3Text: "Choisis la voix du narrateur et la durée. Parfait pour le coucher ou les longs trajets !",
-        catchStars: "Attrape les étoiles !"
+        catchStars: "Attrape les étoiles !",
+        classicStories: "Histoires classiques",
+        classicStoriesSubtitle: "Sans connexion internet",
+        noAudioAvailable: "Audio non disponible"
     },
     en: {
         appName: "StoryTime",
@@ -175,8 +178,207 @@ const translations = {
         onboarding2Text: "Just say what you want in your story: dragons, princesses, pirates... AI creates a unique adventure!",
         onboarding3Title: "Listen and dream",
         onboarding3Text: "Choose the narrator's voice and duration. Perfect for bedtime or long trips!",
-        catchStars: "Catch the stars!"
+        catchStars: "Catch the stars!",
+        classicStories: "Classic Stories",
+        classicStoriesSubtitle: "No internet needed",
+        noAudioAvailable: "Audio not available"
     }
+};
+
+// Standard stories (pre-defined, no AI needed)
+const standardStories = {
+    fr: [
+        {
+            id: 'std-fr-1',
+            title: 'Le Petit Chaperon Rouge',
+            text: `Il était une fois une petite fille que tout le monde aimait bien, surtout sa grand-mère. Elle lui avait donné un petit chaperon rouge, qui lui allait si bien que partout on l'appelait le Petit Chaperon Rouge.
+
+Un jour, sa mère lui dit : "Va voir comment se porte ta grand-mère, car on m'a dit qu'elle était malade. Porte-lui une galette et ce petit pot de beurre."
+
+Le Petit Chaperon Rouge partit aussitôt. Sa grand-mère habitait dans une autre village, au-delà de la forêt. En traversant le bois, elle rencontra le loup qui eut bien envie de la manger. Mais il n'osa pas à cause des bûcherons qui travaillaient dans la forêt.
+
+"Où vas-tu ?" lui demanda le loup. "Je vais voir ma grand-mère et lui porter une galette avec un petit pot de beurre," répondit le Petit Chaperon Rouge.
+
+Le loup se mit à courir de toutes ses forces par le chemin le plus court, tandis que la petite fille suivait le chemin le plus long, s'amusant à cueillir des fleurs.
+
+Le loup arriva le premier à la maison de la grand-mère. Il frappa à la porte. "Qui est là ?" "C'est votre petite-fille," dit le loup en contrefaisant sa voix. La grand-mère lui cria : "Tire la chevillette, la bobinette cherra."
+
+Le loup tira la chevillette et la porte s'ouvrit. Il se jeta sur la pauvre femme et la dévora. Puis il ferma la porte et alla se coucher dans le lit de la grand-mère, en attendant le Petit Chaperon Rouge.
+
+Quelque temps après, la petite fille frappa à la porte. "Qui est là ?" Le Petit Chaperon Rouge eut peur en entendant la grosse voix du loup, mais croyant que sa grand-mère était enrhumée, elle répondit : "C'est votre petite-fille."
+
+Le loup lui cria : "Tire la chevillette, la bobinette cherra." Le Petit Chaperon Rouge tira la chevillette et la porte s'ouvrit.
+
+En la voyant entrer, le loup lui dit : "Pose la galette et le petit pot de beurre sur la table et viens te coucher près de moi."
+
+Le Petit Chaperon Rouge se coucha près du loup. Elle fut bien étonnée de voir comment sa grand-mère était faite.
+
+"Grand-mère, que vous avez de grands bras !" "C'est pour mieux t'embrasser, mon enfant." "Grand-mère, que vous avez de grandes jambes !" "C'est pour mieux courir, mon enfant." "Grand-mère, que vous avez de grandes oreilles !" "C'est pour mieux écouter, mon enfant." "Grand-mère, que vous avez de grands yeux !" "C'est pour mieux voir, mon enfant." "Grand-mère, que vous avez de grandes dents !" "C'est pour mieux te manger !"
+
+À ces mots, le méchant loup se jeta sur le Petit Chaperon Rouge. Mais un chasseur qui passait par là entendit les cris. Il entra dans la maison et délivra la petite fille et sa grand-mère.
+
+Et depuis ce jour, le Petit Chaperon Rouge n'alla plus jamais seule dans la forêt.`,
+            duration_seconds: 240,
+            category: 'classic',
+            icon: '🐺'
+        },
+        {
+            id: 'std-fr-2',
+            title: 'Les Trois Petits Cochons',
+            text: `Il était une fois trois petits cochons qui vivaient avec leur maman dans une petite maison. Un jour, leur maman leur dit qu'ils étaient assez grands pour partir vivre leur propre vie.
+
+Le premier petit cochon, qui était le plus paresseux, construisit sa maison en paille. "Ce sera vite fait !" dit-il. Et en effet, en une journée, sa maison était terminée.
+
+Le deuxième petit cochon, un peu moins paresseux, construisit sa maison en bois. "Ce sera solide et rapide," pensa-t-il. En deux jours, sa maison était prête.
+
+Le troisième petit cochon, le plus travailleur, décida de construire sa maison en briques. "Ce sera long, mais ma maison sera très solide," dit-il. Il travailla pendant plusieurs semaines.
+
+Un jour, le grand méchant loup arriva dans le quartier. Il avait très faim et les trois petits cochons lui semblaient délicieux.
+
+Il s'approcha de la maison de paille du premier petit cochon. "Petit cochon, petit cochon, laisse-moi entrer !" "Non, non, par le poil de mon menton !" répondit le cochon.
+
+"Alors je vais souffler, et ta maison s'envolera !" Le loup souffla très fort, et la maison de paille s'envola. Le premier petit cochon courut se réfugier chez son frère.
+
+Le loup arriva devant la maison de bois. "Petits cochons, petits cochons, laissez-moi entrer !" "Non, non, par le poil de nos mentons !"
+
+"Alors je vais souffler, et votre maison s'écroulera !" Le loup souffla de toutes ses forces, et la maison de bois s'écroula. Les deux petits cochons coururent chez leur frère.
+
+Le loup arriva enfin devant la maison de briques. "Petits cochons, petits cochons, laissez-moi entrer !" "Non, non, par le poil de nos mentons !"
+
+Le loup souffla, souffla encore, mais la maison de briques ne bougea pas d'un centimètre. Furieux, le loup décida de passer par la cheminée.
+
+Mais le troisième petit cochon, très malin, avait allumé un grand feu dans la cheminée. Le loup tomba dans le feu et s'enfuit en hurlant, pour ne plus jamais revenir.
+
+Les trois petits cochons vécurent heureux ensemble dans la solide maison de briques.`,
+            duration_seconds: 210,
+            category: 'classic',
+            icon: '🐷'
+        },
+        {
+            id: 'std-fr-3',
+            title: 'Boucle d\'Or et les Trois Ours',
+            text: `Il était une fois trois ours qui vivaient dans une jolie maison au milieu de la forêt : Papa Ours, Maman Ours et Bébé Ours.
+
+Un matin, Maman Ours prépara de la bouillie pour le petit-déjeuner. Mais la bouillie était trop chaude ! Les trois ours décidèrent d'aller se promener dans la forêt en attendant qu'elle refroidisse.
+
+Pendant ce temps, une petite fille aux boucles dorées, appelée Boucle d'Or, se promenait dans la forêt. Elle découvrit la maison des trois ours et, comme elle était très curieuse, elle entra.
+
+Dans la cuisine, elle vit les trois bols de bouillie. Elle goûta d'abord celui de Papa Ours. "Aïe ! C'est trop chaud !" Puis celui de Maman Ours. "Beurk ! C'est trop froid !" Enfin celui de Bébé Ours. "Mmmm ! C'est parfait !" Et elle mangea toute la bouillie.
+
+Dans le salon, elle vit trois chaises. Elle s'assit sur celle de Papa Ours. "Oh ! C'est trop dur !" Puis sur celle de Maman Ours. "Oh ! C'est trop mou !" Enfin sur celle de Bébé Ours. "Ah ! C'est parfait !" Mais crac ! La chaise se cassa !
+
+Boucle d'Or monta dans la chambre et vit trois lits. Elle s'allongea sur celui de Papa Ours. "C'est trop dur !" Puis sur celui de Maman Ours. "C'est trop mou !" Enfin sur celui de Bébé Ours. "C'est parfait !" Et elle s'endormit.
+
+Les trois ours rentrèrent de leur promenade. Papa Ours regarda son bol : "Quelqu'un a goûté ma bouillie !" Maman Ours regarda le sien : "Quelqu'un a goûté ma bouillie aussi !" Bébé Ours pleura : "Quelqu'un a mangé toute ma bouillie !"
+
+Dans le salon, Papa Ours gronda : "Quelqu'un s'est assis sur ma chaise !" Maman Ours s'étonna : "Quelqu'un s'est assis sur ma chaise aussi !" Bébé Ours sanglota : "Quelqu'un a cassé ma chaise !"
+
+Dans la chambre, Papa Ours grogna : "Quelqu'un s'est couché dans mon lit !" Maman Ours s'exclama : "Quelqu'un s'est couché dans mon lit aussi !" Bébé Ours cria : "Quelqu'un dort encore dans mon lit !"
+
+Boucle d'Or se réveilla en sursaut. En voyant les trois ours, elle eut si peur qu'elle sauta par la fenêtre et courut chez elle aussi vite que possible.
+
+Et depuis ce jour, elle ne rentra plus jamais dans une maison sans y être invitée.`,
+            duration_seconds: 230,
+            category: 'classic',
+            icon: '🐻'
+        }
+    ],
+    en: [
+        {
+            id: 'std-en-1',
+            title: 'Little Red Riding Hood',
+            text: `Once upon a time, there was a little girl who was loved by everyone, especially her grandmother. She had given her a red velvet hood, which suited her so well that everyone called her Little Red Riding Hood.
+
+One day, her mother said to her: "Go see how your grandmother is doing, for I've heard she's been ill. Take her this cake and this little pot of butter."
+
+Little Red Riding Hood set off at once. Her grandmother lived in another village, beyond the forest. As she walked through the woods, she met the wolf, who wanted very much to eat her. But he didn't dare, because of the woodcutters working nearby.
+
+"Where are you going?" asked the wolf. "I'm going to see my grandmother and bring her a cake and a little pot of butter," replied Little Red Riding Hood.
+
+The wolf ran as fast as he could by the shorter path, while the little girl took the longer path, stopping to pick flowers.
+
+The wolf arrived first at the grandmother's house. He knocked on the door. "Who's there?" "It's your granddaughter," said the wolf, disguising his voice. The grandmother called out: "Pull the string and the latch will open."
+
+The wolf pulled the string and the door opened. He threw himself on the poor woman and devoured her. Then he closed the door and got into the grandmother's bed, waiting for Little Red Riding Hood.
+
+Some time later, the little girl knocked on the door. "Who's there?" Little Red Riding Hood was frightened by the wolf's deep voice, but thinking her grandmother had a cold, she replied: "It's your granddaughter."
+
+The wolf called out: "Pull the string and the latch will open." Little Red Riding Hood pulled the string and the door opened.
+
+Seeing her enter, the wolf said: "Put the cake and butter on the table and come lie down beside me."
+
+Little Red Riding Hood lay down beside the wolf. She was very surprised to see what her grandmother looked like.
+
+"Grandmother, what big arms you have!" "All the better to hug you, my dear." "Grandmother, what big legs you have!" "All the better to run, my dear." "Grandmother, what big ears you have!" "All the better to hear you, my dear." "Grandmother, what big eyes you have!" "All the better to see you, my dear." "Grandmother, what big teeth you have!" "All the better to eat you!"
+
+With these words, the wicked wolf threw himself on Little Red Riding Hood. But a hunter passing by heard the screams. He entered the house and saved the little girl and her grandmother.
+
+And from that day on, Little Red Riding Hood never walked alone in the forest again.`,
+            duration_seconds: 240,
+            category: 'classic',
+            icon: '🐺'
+        },
+        {
+            id: 'std-en-2',
+            title: 'The Three Little Pigs',
+            text: `Once upon a time, there were three little pigs who lived with their mother in a small house. One day, their mother told them they were old enough to go out and build their own homes.
+
+The first little pig, who was the laziest, built his house of straw. "That will be quick!" he said. And indeed, in just one day, his house was finished.
+
+The second little pig, a little less lazy, built his house of wood. "That will be sturdy and fast," he thought. In two days, his house was ready.
+
+The third little pig, the hardest worker, decided to build his house of bricks. "It will take a long time, but my house will be very strong," he said. He worked for several weeks.
+
+One day, the big bad wolf arrived in the neighborhood. He was very hungry, and the three little pigs looked delicious to him.
+
+He approached the first pig's straw house. "Little pig, little pig, let me in!" "No, no, by the hair of my chinny chin chin!" replied the pig.
+
+"Then I'll huff and I'll puff and I'll blow your house down!" The wolf huffed and puffed, and the straw house blew away. The first little pig ran to his brother's house.
+
+The wolf arrived at the wooden house. "Little pigs, little pigs, let me in!" "No, no, by the hair of our chinny chin chins!"
+
+"Then I'll huff and I'll puff and I'll blow your house down!" The wolf huffed and puffed with all his might, and the wooden house fell down. The two little pigs ran to their brother's house.
+
+The wolf finally arrived at the brick house. "Little pigs, little pigs, let me in!" "No, no, by the hair of our chinny chin chins!"
+
+The wolf huffed and puffed, huffed and puffed again, but the brick house didn't move an inch. Furious, the wolf decided to climb down the chimney.
+
+But the third little pig, very clever, had lit a big fire in the fireplace. The wolf fell into the fire and ran away howling, never to return.
+
+The three little pigs lived happily together in the strong brick house.`,
+            duration_seconds: 210,
+            category: 'classic',
+            icon: '🐷'
+        },
+        {
+            id: 'std-en-3',
+            title: 'Goldilocks and the Three Bears',
+            text: `Once upon a time, three bears lived in a lovely house in the middle of the forest: Father Bear, Mother Bear, and Baby Bear.
+
+One morning, Mother Bear made porridge for breakfast. But the porridge was too hot! The three bears decided to take a walk in the forest while it cooled down.
+
+Meanwhile, a little girl with golden curls, called Goldilocks, was walking in the forest. She discovered the three bears' house and, being very curious, she went inside.
+
+In the kitchen, she saw three bowls of porridge. She tasted Father Bear's first. "Ouch! It's too hot!" Then Mother Bear's. "Yuck! It's too cold!" Finally Baby Bear's. "Mmm! It's just right!" And she ate all the porridge.
+
+In the living room, she saw three chairs. She sat in Father Bear's chair. "Oh! It's too hard!" Then in Mother Bear's chair. "Oh! It's too soft!" Finally in Baby Bear's chair. "Ah! It's just right!" But crack! The chair broke!
+
+Goldilocks went upstairs to the bedroom and saw three beds. She lay down on Father Bear's bed. "It's too hard!" Then on Mother Bear's bed. "It's too soft!" Finally on Baby Bear's bed. "It's just right!" And she fell asleep.
+
+The three bears came home from their walk. Father Bear looked at his bowl: "Someone's been eating my porridge!" Mother Bear looked at hers: "Someone's been eating my porridge too!" Baby Bear cried: "Someone's eaten all my porridge!"
+
+In the living room, Father Bear growled: "Someone's been sitting in my chair!" Mother Bear exclaimed: "Someone's been sitting in my chair too!" Baby Bear sobbed: "Someone's broken my chair!"
+
+In the bedroom, Father Bear grumbled: "Someone's been sleeping in my bed!" Mother Bear cried: "Someone's been sleeping in my bed too!" Baby Bear shouted: "Someone's still sleeping in my bed!"
+
+Goldilocks woke up with a start. When she saw the three bears, she was so frightened that she jumped out the window and ran home as fast as she could.
+
+And from that day on, she never entered a house without being invited.`,
+            duration_seconds: 230,
+            category: 'classic',
+            icon: '🐻'
+        }
+    ]
 };
 
 // Fun facts shown during generation
@@ -935,6 +1137,12 @@ function showPlayer() {
     state.textVisible = true;
     updateTextToggleUI();
 
+    // Show audio controls for AI-generated stories
+    const audioPlayer = document.querySelector('.audio-player');
+    if (audioPlayer) {
+        audioPlayer.style.display = 'block';
+    }
+
     // Start playing audio
     const audioUrl = `${CONFIG.API_URL}${state.currentStory.audio_url}`;
     Android.playAudio(audioUrl);
@@ -1351,6 +1559,82 @@ async function previewVoice() {
         console.error('Error previewing voice:', error);
         state.isPreviewPlaying = false;
         if (btn) btn.classList.remove('loading');
+    }
+}
+
+// Standard Stories Functions
+function showStandardStories() {
+    const modal = document.getElementById('modal-standard-stories');
+    const list = document.getElementById('standard-stories-list');
+
+    if (!modal || !list) return;
+
+    const stories = standardStories[state.lang] || standardStories.en;
+
+    list.innerHTML = stories.map(story => `
+        <div class="standard-story-card" onclick="playStandardStory('${story.id}')">
+            <span class="standard-story-icon">${story.icon}</span>
+            <div class="standard-story-info">
+                <div class="standard-story-title">${story.title}</div>
+                <div class="standard-story-duration">${Math.round(story.duration_seconds / 60)} min</div>
+            </div>
+            <span class="standard-story-play">▶</span>
+        </div>
+    `).join('');
+
+    modal.classList.add('active');
+}
+
+function hideStandardStories() {
+    const modal = document.getElementById('modal-standard-stories');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function playStandardStory(storyId) {
+    const stories = standardStories[state.lang] || standardStories.en;
+    const story = stories.find(s => s.id === storyId);
+
+    if (!story) return;
+
+    hideStandardStories();
+
+    // Set as current story (without audio_url for now)
+    state.currentStory = {
+        story_id: story.id,
+        title: story.title,
+        text: story.text,
+        duration_seconds: story.duration_seconds,
+        audio_url: null, // No audio for standard stories yet
+        isStandard: true
+    };
+
+    // Show player in text-only mode
+    showPlayerForStandardStory();
+}
+
+function showPlayerForStandardStory() {
+    showPage('player');
+
+    document.getElementById('story-title').textContent = state.currentStory.title;
+
+    // Initialize sentences for reading
+    initStorySentences(state.currentStory.text);
+
+    // Show text by default
+    state.textVisible = true;
+    updateTextToggleUI();
+
+    // Hide audio controls for standard stories (no audio)
+    const audioPlayer = document.querySelector('.audio-player');
+    if (audioPlayer) {
+        audioPlayer.style.display = state.currentStory.isStandard ? 'none' : 'block';
+    }
+
+    // Show info that audio is not available
+    if (state.currentStory.isStandard) {
+        showToast(t('noAudioAvailable'), 'info');
     }
 }
 
