@@ -827,7 +827,8 @@ function onSpeechError(error) {
     onSpeechStop();
     console.error('Speech error:', error);
     if (error !== 'no_match') {
-        showToast(t('errorMessage'), 'error');
+        // Show detailed error for debugging
+        showToast('Speech Error: ' + error, 'error');
     }
 }
 
@@ -1089,7 +1090,8 @@ async function generateStory() {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            throw new Error('API error');
+            const errorText = await response.text().catch(() => 'Unknown error');
+            throw new Error(`API ${response.status}: ${errorText.substring(0, 50)}`);
         }
 
         // Step 1 complete, Step 2 starting (API does both, but we show progress)
@@ -1112,7 +1114,14 @@ async function generateStory() {
     } catch (error) {
         console.error('Error generating story:', error);
         stopStarGame();
-        showToast(t('errorMessage'), 'error');
+        // Show detailed error for debugging
+        let errorMsg = error.message || error.toString();
+        if (error.name === 'AbortError') {
+            errorMsg = 'Timeout: Server took too long (>3min)';
+        } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
+            errorMsg = 'Network error: Check your connection';
+        }
+        showToast('Error: ' + errorMsg.substring(0, 100), 'error');
         showPage('home');
     }
 }
@@ -1254,7 +1263,8 @@ function onAudioProgress(position, duration) {
 
 function onAudioError(error) {
     console.error('Audio error:', error);
-    showToast(t('errorMessage'), 'error');
+    // Show detailed error message for debugging on phone
+    showToast('Audio Error: ' + error, 'error');
 }
 
 // Update player UI
@@ -1561,11 +1571,13 @@ async function previewVoice() {
         } else {
             state.isPreviewPlaying = false;
             if (btn) btn.classList.remove('loading');
+            showToast('Preview error: ' + response.status, 'error');
         }
     } catch (error) {
         console.error('Error previewing voice:', error);
         state.isPreviewPlaying = false;
         if (btn) btn.classList.remove('loading');
+        showToast('Preview: ' + (error.message || 'Network error'), 'error');
     }
 }
 
