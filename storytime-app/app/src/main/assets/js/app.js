@@ -109,7 +109,9 @@ const translations = {
         catchStars: "Attrape les étoiles !",
         classicStories: "Histoires classiques",
         classicStoriesSubtitle: "Sans connexion internet",
-        noAudioAvailable: "Audio non disponible"
+        noAudioAvailable: "Audio non disponible",
+        createAIStory: "Créer avec l'IA",
+        createAIStorySubtitle: "Histoire personnalisée"
     },
     en: {
         appName: "StoryTime",
@@ -181,7 +183,9 @@ const translations = {
         catchStars: "Catch the stars!",
         classicStories: "Classic Stories",
         classicStoriesSubtitle: "No internet needed",
-        noAudioAvailable: "Audio not available"
+        noAudioAvailable: "Audio not available",
+        createAIStory: "Create with AI",
+        createAIStorySubtitle: "Personalized story"
     }
 };
 
@@ -486,6 +490,14 @@ function completeOnboarding() {
     showPage('language');
 }
 
+// Scroll to AI creation section
+function scrollToCreate() {
+    const section = document.getElementById('ai-creation-section');
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
 // First time language selection (goes to setup)
 function selectLanguageFirst(lang) {
     state.lang = lang;
@@ -664,21 +676,21 @@ async function loadVoices() {
 function getDefaultVoices() {
     if (state.lang === 'en') {
         return [
-            { id: 'en-US-JennyNeural', name: 'The Fairy', description: 'Warm and gentle voice', avatar: '🧚' },
-            { id: 'en-US-GuyNeural', name: 'The Wizard', description: 'Deep narrator voice', avatar: '🧙' },
-            { id: 'en-US-AnaNeural', name: 'The Little One', description: 'Young and cheerful voice', avatar: '👧' },
-            { id: 'en-US-AriaNeural', name: 'The Princess', description: 'Elegant and dreamy voice', avatar: '👸' },
-            { id: 'en-US-ChristopherNeural', name: 'The Knight', description: 'Brave and adventurous voice', avatar: '🤴' },
-            { id: 'en-US-MichelleNeural', name: 'The Grandma', description: 'Warm and comforting voice', avatar: '👵' }
+            { id: 'en-US-JennyNeural', name: 'The Fairy', description: 'Warm and gentle voice', avatar: '🧚', character: 'fairy' },
+            { id: 'en-US-GuyNeural', name: 'The Wizard', description: 'Deep narrator voice', avatar: '🧙', character: 'wizard' },
+            { id: 'en-US-AnaNeural', name: 'The Little One', description: 'Young and cheerful voice', avatar: '👧', character: 'child' },
+            { id: 'en-US-AriaNeural', name: 'The Princess', description: 'Elegant and dreamy voice', avatar: '👸', character: 'princess' },
+            { id: 'en-US-ChristopherNeural', name: 'The Knight', description: 'Brave and adventurous voice', avatar: '🤴', character: 'knight' },
+            { id: 'en-US-MichelleNeural', name: 'The Grandma', description: 'Warm and comforting voice', avatar: '👵', character: 'grandma' }
         ];
     }
     return [
-        { id: 'fr-FR-DeniseNeural', name: 'La Fée', description: 'Voix douce et chaleureuse', avatar: '🧚' },
-        { id: 'fr-FR-HenriNeural', name: 'Le Sage', description: 'Voix grave et rassurante', avatar: '🧙' },
-        { id: 'fr-FR-EloiseNeural', name: 'La Petite', description: 'Voix jeune et enjouée', avatar: '👧' },
-        { id: 'fr-FR-BrigitteNeural', name: 'La Princesse', description: 'Voix élégante et rêveuse', avatar: '👸' },
-        { id: 'fr-FR-AlainNeural', name: 'Le Chevalier', description: 'Voix brave et aventureuse', avatar: '🤴' },
-        { id: 'fr-FR-JacquelineNeural', name: 'Mamie', description: 'Voix chaude et réconfortante', avatar: '👵' }
+        { id: 'fr-FR-DeniseNeural', name: 'La Fée', description: 'Voix douce et chaleureuse', avatar: '🧚', character: 'fairy' },
+        { id: 'fr-FR-HenriNeural', name: 'Le Sage', description: 'Voix grave et rassurante', avatar: '🧙', character: 'wizard' },
+        { id: 'fr-FR-EloiseNeural', name: 'La Petite', description: 'Voix jeune et enjouée', avatar: '👧', character: 'child' },
+        { id: 'fr-FR-BrigitteNeural', name: 'La Princesse', description: 'Voix élégante et rêveuse', avatar: '👸', character: 'princess' },
+        { id: 'fr-FR-AlainNeural', name: 'Le Chevalier', description: 'Voix brave et aventureuse', avatar: '🤴', character: 'knight' },
+        { id: 'fr-FR-JacquelineNeural', name: 'Mamie', description: 'Voix chaude et réconfortante', avatar: '👵', character: 'grandma' }
     ];
 }
 
@@ -690,8 +702,9 @@ function updateVoicesUI() {
     grid.innerHTML = state.voices.map(voice =>
         `<div class="voice-avatar ${state.selectedVoice === voice.id ? 'active' : ''}"
              data-voice-id="${voice.id}"
+             data-character="${voice.character || 'default'}"
              onclick="selectVoice('${voice.id}')">
-            <span class="voice-avatar-emoji">${voice.avatar || '🎤'}</span>
+            <div class="voice-avatar-img">${voice.avatar || '🎤'}</div>
             <span class="voice-avatar-name">${voice.name}</span>
         </div>`
     ).join('');
@@ -711,9 +724,6 @@ function selectVoice(voiceId) {
             avatar.classList.add('active');
         }
     });
-
-    // Update voice info
-    updateVoiceInfo();
 }
 
 // Update voice info display

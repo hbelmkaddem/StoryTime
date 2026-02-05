@@ -128,70 +128,80 @@
     <div id="page-home" class="page home-page">
         <div class="header">
             <button class="header-btn" onclick="showLibrary()">📚</button>
-            <h1 class="page-title" data-i18n="tellMeStory">Raconte-moi une histoire !</h1>
+            <h1 class="page-title">StoryTime</h1>
             <button class="header-btn" onclick="showSettingsPage()">⚙️</button>
         </div>
 
-        <!-- Record Section -->
-        <div class="record-section">
-            <button id="record-btn" class="record-btn" onclick="toggleRecording()">
-                <div class="audio-waves">
-                    <div class="audio-wave"></div>
-                    <div class="audio-wave"></div>
-                    <div class="audio-wave"></div>
+        <!-- Two Main Options -->
+        <div class="home-options">
+            <!-- Classic Stories Card -->
+            <div class="option-card classic-card" onclick="showStandardStories()">
+                <div class="option-card-icons">📖✨🌙</div>
+                <div class="option-card-title" data-i18n="classicStories">Histoires classiques</div>
+                <div class="option-card-subtitle" data-i18n="classicStoriesSubtitle">Sans connexion internet</div>
+            </div>
+
+            <!-- AI Story Card -->
+            <div class="option-card ai-card" onclick="scrollToCreate()">
+                <div class="option-card-icons">🎤🤖✨</div>
+                <div class="option-card-title" data-i18n="createAIStory">Créer avec l'IA</div>
+                <div class="option-card-subtitle" data-i18n="createAIStorySubtitle">Histoire personnalisée</div>
+            </div>
+        </div>
+
+        <!-- AI Story Creation Section -->
+        <div id="ai-creation-section" class="ai-creation-section">
+            <div class="section-title" data-i18n="tellMeStory">Raconte-moi une histoire !</div>
+
+            <!-- Record Section -->
+            <div class="record-section">
+                <button id="record-btn" class="record-btn" onclick="toggleRecording()">
+                    <div class="audio-waves">
+                        <div class="audio-wave"></div>
+                        <div class="audio-wave"></div>
+                        <div class="audio-wave"></div>
+                    </div>
+                    <span class="icon">🎤</span>
+                    <span id="record-label" class="label" data-i18n="pressAndSpeak">Appuie et parle !</span>
+                </button>
+            </div>
+
+            <!-- Keywords Section -->
+            <div class="keywords-section">
+                <div id="keywords-container" class="keywords-container">
+                    <span class="keywords-empty" data-i18n="keywordsEmpty">Dis ce que tu veux dans ton histoire...</span>
                 </div>
-                <span class="icon">🎤</span>
-                <span id="record-label" class="label" data-i18n="pressAndSpeak">Appuie et parle !</span>
-            </button>
-            <p class="record-hint" data-i18n="keywordsLabel">Mots-cles de l'histoire</p>
-        </div>
+                <div class="keywords-actions">
+                    <button class="action-btn-small" onclick="showAddKeywordModal()">+ <span data-i18n="addKeyword">Ajouter</span></button>
+                    <button class="action-btn-small" onclick="clearKeywords()">🔄 <span data-i18n="reRecord">Re-enregistrer</span></button>
+                </div>
+            </div>
 
-        <!-- Keywords Section -->
-        <div class="keywords-section">
-            <div class="section-label" data-i18n="keywordsLabel">Mots-cles de l'histoire</div>
-            <div id="keywords-container" class="keywords-container">
-                <span class="keywords-empty" data-i18n="keywordsEmpty">Dis ce que tu veux dans ton histoire...</span>
+            <!-- Child Names -->
+            <div class="input-section">
+                <div class="section-label" data-i18n="heroNames">Prenoms des heros (optionnel)</div>
+                <input type="text" class="input-field"
+                       data-i18n-placeholder="heroNamesPlaceholder"
+                       placeholder="Lina, Adam..."
+                       onchange="onChildNamesChange(this.value)">
             </div>
-            <div class="keywords-actions">
-                <button class="action-btn-small" onclick="showAddKeywordModal()">+ <span data-i18n="addKeyword">Ajouter</span></button>
-                <button class="action-btn-small" onclick="clearKeywords()">🔄 <span data-i18n="reRecord">Re-enregistrer</span></button>
-            </div>
-        </div>
 
-        <!-- Child Names -->
-        <div class="input-section">
-            <div class="section-label" data-i18n="heroNames">Prenoms des heros (optionnel)</div>
-            <input type="text" class="input-field"
-                   data-i18n-placeholder="heroNamesPlaceholder"
-                   placeholder="Lina, Adam..."
-                   onchange="onChildNamesChange(this.value)">
-        </div>
+            <!-- Voice Selector with Images -->
+            <div class="voice-selector">
+                <div class="section-label" data-i18n="whoTells">Qui raconte l'histoire ?</div>
+                <div id="voice-grid" class="voice-grid">
+                    <!-- Populated by JS with character images -->
+                </div>
+                <button id="preview-btn" class="voice-preview-btn" onclick="previewVoice()">
+                    <span class="preview-icon">▶</span> <span data-i18n="voicePreview">Ecouter</span>
+                </button>
+            </div>
 
-        <!-- Voice Selector -->
-        <div class="voice-selector">
-            <div class="section-label" data-i18n="whoTells">Qui raconte l'histoire ?</div>
-            <div id="voice-grid" class="voice-grid">
-                <!-- Populated by JS -->
-            </div>
-            <div id="voice-info" class="voice-info">
-                <span id="voice-name" class="voice-name"></span>
-                <span id="voice-desc" class="voice-desc"></span>
-            </div>
-            <button id="preview-btn" class="voice-preview-btn" onclick="previewVoice()">
-                <span class="preview-icon">▶</span> <span data-i18n="voicePreview">Ecouter</span>
+            <!-- Generate Button -->
+            <button id="generate-btn" class="generate-btn" onclick="generateStory()" disabled>
+                ✨ <span data-i18n="createStory">Creer mon histoire !</span>
             </button>
         </div>
-
-        <!-- Generate Button -->
-        <button id="generate-btn" class="generate-btn" onclick="generateStory()" disabled>
-            ✨ <span data-i18n="createStory">Creer mon histoire !</span>
-        </button>
-
-        <!-- Standard Stories Button -->
-        <button class="standard-stories-btn" onclick="showStandardStories()">
-            📚 <span data-i18n="classicStories">Histoires classiques</span>
-            <span class="standard-stories-subtitle" data-i18n="classicStoriesSubtitle">Sans connexion internet</span>
-        </button>
     </div>
 
     <!-- Generating Page -->
