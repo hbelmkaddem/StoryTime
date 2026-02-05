@@ -423,24 +423,13 @@ body {
 }
 
 .voice-avatar-img {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin-bottom: 6px;
-    font-size: 28px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    object-fit: cover;
 }
-
-/* Character-specific backgrounds */
-.voice-avatar[data-character="fairy"] .voice-avatar-img { background: linear-gradient(135deg, #FFB6C1, #FF69B4); }
-.voice-avatar[data-character="wizard"] .voice-avatar-img { background: linear-gradient(135deg, #9B59B6, #8E44AD); }
-.voice-avatar[data-character="child"] .voice-avatar-img { background: linear-gradient(135deg, #F39C12, #E67E22); }
-.voice-avatar[data-character="princess"] .voice-avatar-img { background: linear-gradient(135deg, #E91E63, #C2185B); }
-.voice-avatar[data-character="knight"] .voice-avatar-img { background: linear-gradient(135deg, #3498DB, #2980B9); }
-.voice-avatar[data-character="grandma"] .voice-avatar-img { background: linear-gradient(135deg, #95A5A6, #7F8C8D); }
 
 .voice-avatar-name {
     font-family: var(--font-body);

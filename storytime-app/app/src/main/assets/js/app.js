@@ -676,21 +676,21 @@ async function loadVoices() {
 function getDefaultVoices() {
     if (state.lang === 'en') {
         return [
-            { id: 'en-US-JennyNeural', name: 'The Fairy', description: 'Warm and gentle voice', avatar: '🧚', character: 'fairy' },
-            { id: 'en-US-GuyNeural', name: 'The Wizard', description: 'Deep narrator voice', avatar: '🧙', character: 'wizard' },
-            { id: 'en-US-AnaNeural', name: 'The Little One', description: 'Young and cheerful voice', avatar: '👧', character: 'child' },
-            { id: 'en-US-AriaNeural', name: 'The Princess', description: 'Elegant and dreamy voice', avatar: '👸', character: 'princess' },
-            { id: 'en-US-ChristopherNeural', name: 'The Knight', description: 'Brave and adventurous voice', avatar: '🤴', character: 'knight' },
-            { id: 'en-US-MichelleNeural', name: 'The Grandma', description: 'Warm and comforting voice', avatar: '👵', character: 'grandma' }
+            { id: 'en-US-JennyNeural', name: 'The Fairy', description: 'Warm and gentle voice', character: 'fairy', image: 'images/characters/fairy.svg' },
+            { id: 'en-US-GuyNeural', name: 'The Wizard', description: 'Deep narrator voice', character: 'wizard', image: 'images/characters/wizard.svg' },
+            { id: 'en-US-AnaNeural', name: 'The Little One', description: 'Young and cheerful voice', character: 'child', image: 'images/characters/child.svg' },
+            { id: 'en-US-AriaNeural', name: 'The Princess', description: 'Elegant and dreamy voice', character: 'princess', image: 'images/characters/princess.svg' },
+            { id: 'en-US-ChristopherNeural', name: 'The Knight', description: 'Brave and adventurous voice', character: 'knight', image: 'images/characters/knight.svg' },
+            { id: 'en-US-MichelleNeural', name: 'The Grandma', description: 'Warm and comforting voice', character: 'grandma', image: 'images/characters/grandma.svg' }
         ];
     }
     return [
-        { id: 'fr-FR-DeniseNeural', name: 'La Fée', description: 'Voix douce et chaleureuse', avatar: '🧚', character: 'fairy' },
-        { id: 'fr-FR-HenriNeural', name: 'Le Sage', description: 'Voix grave et rassurante', avatar: '🧙', character: 'wizard' },
-        { id: 'fr-FR-EloiseNeural', name: 'La Petite', description: 'Voix jeune et enjouée', avatar: '👧', character: 'child' },
-        { id: 'fr-FR-BrigitteNeural', name: 'La Princesse', description: 'Voix élégante et rêveuse', avatar: '👸', character: 'princess' },
-        { id: 'fr-FR-AlainNeural', name: 'Le Chevalier', description: 'Voix brave et aventureuse', avatar: '🤴', character: 'knight' },
-        { id: 'fr-FR-JacquelineNeural', name: 'Mamie', description: 'Voix chaude et réconfortante', avatar: '👵', character: 'grandma' }
+        { id: 'fr-FR-DeniseNeural', name: 'La Fée', description: 'Voix douce et chaleureuse', character: 'fairy', image: 'images/characters/fairy.svg' },
+        { id: 'fr-FR-HenriNeural', name: 'Le Sage', description: 'Voix grave et rassurante', character: 'wizard', image: 'images/characters/wizard.svg' },
+        { id: 'fr-FR-EloiseNeural', name: 'La Petite', description: 'Voix jeune et enjouée', character: 'child', image: 'images/characters/child.svg' },
+        { id: 'fr-FR-BrigitteNeural', name: 'La Princesse', description: 'Voix élégante et rêveuse', character: 'princess', image: 'images/characters/princess.svg' },
+        { id: 'fr-FR-AlainNeural', name: 'Le Chevalier', description: 'Voix brave et aventureuse', character: 'knight', image: 'images/characters/knight.svg' },
+        { id: 'fr-FR-JacquelineNeural', name: 'Mamie', description: 'Voix chaude et réconfortante', character: 'grandma', image: 'images/characters/grandma.svg' }
     ];
 }
 
@@ -704,13 +704,10 @@ function updateVoicesUI() {
              data-voice-id="${voice.id}"
              data-character="${voice.character || 'default'}"
              onclick="selectVoice('${voice.id}')">
-            <div class="voice-avatar-img">${voice.avatar || '🎤'}</div>
+            <img class="voice-avatar-img" src="${voice.image || 'images/characters/fairy.svg'}" alt="${voice.name}">
             <span class="voice-avatar-name">${voice.name}</span>
         </div>`
     ).join('');
-
-    // Update voice info
-    updateVoiceInfo();
 }
 
 // Select voice

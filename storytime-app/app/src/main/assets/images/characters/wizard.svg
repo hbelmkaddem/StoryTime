@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="wizardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9B59B6"/>
+      <stop offset="100%" style="stop-color:#8E44AD"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#wizardBg)"/>
+  <!-- Face -->
+  <circle cx="50" cy="58" r="22" fill="#FFE4C4"/>
+  <!-- Beard -->
+  <ellipse cx="50" cy="75" rx="18" ry="15" fill="#E0E0E0"/>
+  <ellipse cx="50" cy="68" rx="15" ry="10" fill="#E0E0E0"/>
+  <!-- Eyes -->
+  <ellipse cx="42" cy="55" rx="4" ry="5" fill="#4A4A4A"/>
+  <ellipse cx="58" cy="55" rx="4" ry="5" fill="#4A4A4A"/>
+  <circle cx="43" cy="54" r="1.5" fill="white"/>
+  <circle cx="59" cy="54" r="1.5" fill="white"/>
+  <!-- Eyebrows -->
+  <path d="M 36 48 Q 42 45 48 48" stroke="#9E9E9E" stroke-width="2" fill="none"/>
+  <path d="M 52 48 Q 58 45 64 48" stroke="#9E9E9E" stroke-width="2" fill="none"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="60" rx="3" ry="4" fill="#DEB887"/>
+  <!-- Hat -->
+  <polygon points="50,5 25,40 75,40" fill="#3F51B5"/>
+  <ellipse cx="50" cy="40" rx="28" ry="8" fill="#3F51B5"/>
+  <!-- Stars on hat -->
+  <text x="45" y="25" font-size="8" fill="#FFD700">★</text>
+  <text x="55" y="32" font-size="6" fill="#FFD700">★</text>
+  <text x="38" y="35" font-size="5" fill="#FFD700">★</text>
+</svg>
