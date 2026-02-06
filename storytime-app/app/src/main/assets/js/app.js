@@ -938,8 +938,11 @@ function startStarGame() {
     state.starGameMissed = 0;
     updateStarScore();
 
-    // Spawn stars every 700ms
-    state.starGameInterval = setInterval(spawnStar, 700);
+    // Small delay to ensure page is rendered
+    setTimeout(() => {
+        // Spawn stars every 700ms
+        state.starGameInterval = setInterval(spawnStar, 700);
+    }, 300);
 }
 
 function stopStarGame() {
@@ -958,6 +961,10 @@ function spawnStar() {
     const gameArea = document.getElementById('star-game-area');
     if (!gameArea) return;
 
+    // Wait for element to have dimensions
+    const areaWidth = gameArea.offsetWidth || gameArea.clientWidth || 300;
+    if (areaWidth < 50) return; // Skip if area not ready
+
     const star = document.createElement('span');
     star.className = 'game-star';
 
@@ -966,7 +973,7 @@ function spawnStar() {
     star.textContent = stars[Math.floor(Math.random() * stars.length)];
 
     // Random horizontal position
-    const maxX = gameArea.offsetWidth - 40;
+    const maxX = Math.max(areaWidth - 40, 50);
     const randomX = Math.floor(Math.random() * maxX);
     star.style.left = randomX + 'px';
 

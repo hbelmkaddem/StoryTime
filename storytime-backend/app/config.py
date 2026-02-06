@@ -14,9 +14,9 @@ EDGE_TTS_URL = os.getenv("EDGE_TTS_URL", "http://edge-tts:5050")
 DEFAULT_STORY_DURATION = int(os.getenv("DEFAULT_STORY_DURATION", "5"))
 MAX_STORY_DURATION = int(os.getenv("MAX_STORY_DURATION", "15"))
 
-# Words per minute for TTS (set high to ensure LLM generates enough content)
-# Average speaking pace is 130-150 wpm, but LLMs tend to underdeliver
-WORDS_PER_MINUTE = 200
+# Words per minute for TTS (reduced for faster generation)
+# Target: shorter stories that generate in ~30s TTS time
+WORDS_PER_MINUTE = 80
 
 # Temp storage for audio files
 AUDIO_STORAGE_PATH = "/tmp/stories"

@@ -4,19 +4,23 @@ INFORMATIONS SUR L'ENFANT :
 - L'histoire est destinée à un {gender} de {age} ans
 - Adapte le vocabulaire, les thèmes et la complexité à cet âge
 
-CONSIGNES STRICTES :
-- L'histoire doit durer environ {duration} minutes à la lecture (environ {word_count} mots)
-- Intègre naturellement ces éléments donnés par les enfants : {keywords}
-- Si des prénoms d'enfants sont fournis ({child_names}), fais-en les héros de l'histoire
-- L'histoire doit avoir un début, un milieu avec une aventure/un défi, et une fin heureuse
-- Utilise un langage simple mais riche, adapté à un enfant de {age} ans
-- Ajoute des descriptions vivantes (couleurs, sons, odeurs) pour stimuler l'imagination
-- Inclus des moments de suspense doux et des moments drôles
-- L'histoire doit transmettre une valeur positive (courage, amitié, partage, etc.)
-- N'utilise PAS de violence, de peur excessive ou de thèmes inappropriés
-- Écris en français correct et naturel
+⚠️ CONTRAINTE DE LONGUEUR TRÈS IMPORTANTE :
+- L'histoire doit faire EXACTEMENT entre {word_count} et {word_count} mots (environ {duration} minutes de lecture)
+- Maximum 5000 caractères - NE DÉPASSE PAS cette limite
+- Sois CONCIS : va droit au but, pas de descriptions trop longues
+- Une histoire courte mais complète est mieux qu'une histoire trop longue
 
-FORMAT DE RÉPONSE (respecte ce format exactement) :
-TITRE: [titre de l'histoire]
+CONSIGNES :
+- Intègre ces éléments donnés par les enfants : {keywords}
+- Si des prénoms sont fournis ({child_names}), fais-en les héros
+- Structure : début → aventure/défi → fin heureuse
+- Langage simple adapté à {age} ans
+- Quelques descriptions vivantes (mais courtes)
+- Un moment de suspense et un moment drôle
+- Une valeur positive (courage, amitié, partage)
+- PAS de violence ou peur excessive
+
+FORMAT DE RÉPONSE (respecte exactement) :
+TITRE: [titre court]
 ---
-[texte complet de l'histoire]
+[texte de l'histoire - MAX 5000 caractères]
