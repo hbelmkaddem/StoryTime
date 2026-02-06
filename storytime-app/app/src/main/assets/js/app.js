@@ -1095,11 +1095,16 @@ async function generateStory() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 180000);
 
+        // Debug: log the URL we're calling
+        console.log('Calling API:', CONFIG.API_URL + '/api/story/generate');
+
         const response = await fetch(`${CONFIG.API_URL}/api/story/generate`, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
-                'X-API-Key': CONFIG.API_KEY
+                'X-API-Key': CONFIG.API_KEY,
+                'Accept': 'application/json'
             },
             body: JSON.stringify({
                 keywords: state.keywords.join(', '),
@@ -1140,14 +1145,13 @@ async function generateStory() {
     } catch (error) {
         console.error('Error generating story:', error);
         stopStarGame();
-        // Show detailed error for debugging
-        let errorMsg = error.message || error.toString();
+        // Show FULL error details for debugging - don't hide anything
+        let errorMsg = `${error.name}: ${error.message}`;
         if (error.name === 'AbortError') {
-            errorMsg = 'Timeout: Server took too long (>3min)';
-        } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
-            errorMsg = 'Network error: Check your connection';
+            errorMsg = 'Timeout: >3min';
         }
-        showToast('Error: ' + errorMsg.substring(0, 100), 'error');
+        // Show the raw error for debugging
+        showToast(errorMsg.substring(0, 120), 'error');
         showPage('home');
     }
 }
