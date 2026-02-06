@@ -1091,47 +1091,61 @@ async function generateStory() {
             .map(n => n.trim())
             .filter(n => n.length > 0);
 
-        // Call API with timeout (3 minutes)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 180000);
-
-        // Debug: log the URL we're calling
-        console.log('Calling API:', CONFIG.API_URL + '/api/story/generate');
-
-        const response = await fetch(`${CONFIG.API_URL}/api/story/generate`, {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': CONFIG.API_KEY,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                keywords: state.keywords.join(', '),
-                lang: state.lang,
-                voice_id: state.selectedVoice,
-                duration_minutes: state.duration,
-                child_names: childNames.length > 0 ? childNames : null,
-                gender: state.gender,
-                age: state.age
-            }),
-            signal: controller.signal
+        const requestBody = JSON.stringify({
+            keywords: state.keywords.join(', '),
+            lang: state.lang,
+            voice_id: state.selectedVoice,
+            duration_minutes: state.duration,
+            child_names: childNames.length > 0 ? childNames : null,
+            gender: state.gender,
+            age: state.age
         });
 
-        clearTimeout(timeoutId);
+        console.log('Calling API via native:', CONFIG.API_URL + '/api/story/generate');
 
-        if (!response.ok) {
-            const errorText = await response.text().catch(() => 'Unknown error');
-            throw new Error(`API ${response.status}: ${errorText.substring(0, 50)}`);
+        // Use native Android HTTP call to bypass WebView restrictions
+        let apiResult;
+        if (typeof Android !== 'undefined' && Android.makeApiCall) {
+            // Call native Kotlin function (runs in background thread)
+            const resultStr = await new Promise((resolve) => {
+                // Run in setTimeout to not block UI
+                setTimeout(() => {
+                    const result = Android.makeApiCall(
+                        CONFIG.API_URL + '/api/story/generate',
+                        'POST',
+                        requestBody,
+                        CONFIG.API_KEY
+                    );
+                    resolve(result);
+                }, 100);
+            });
+            apiResult = JSON.parse(resultStr);
+        } else {
+            // Fallback to fetch for browser testing
+            const response = await fetch(`${CONFIG.API_URL}/api/story/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': CONFIG.API_KEY
+                },
+                body: requestBody
+            });
+            const data = await response.json();
+            apiResult = { status: response.status, data: data };
         }
 
-        // Step 1 complete, Step 2 starting (API does both, but we show progress)
+        console.log('API result status:', apiResult.status);
+
+        if (apiResult.status !== 200) {
+            throw new Error(`API ${apiResult.status}: ${apiResult.error || JSON.stringify(apiResult.data).substring(0, 50)}`);
+        }
+
+        // Step 1 complete, Step 2 starting
         updateStepUI(1, 'completed');
         updateStepUI(2, 'active');
         updateGeneratingUI(70, '');
 
-        const story = await response.json();
-        state.currentStory = story;
+        state.currentStory = apiResult.data;
 
         // Both steps complete
         updateStepUI(2, 'completed');

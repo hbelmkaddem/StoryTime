@@ -247,6 +247,45 @@ class MainActivity : AppCompatActivity() {
                 checkAudioPermission()
             }
         }
+
+        @JavascriptInterface
+        fun makeApiCall(url: String, method: String, body: String, apiKey: String): String {
+            // Make HTTP request from native code to bypass WebView restrictions
+            return try {
+                Log.d(TAG, "Making API call to: $url")
+                val connection = URL(url).openConnection() as java.net.HttpURLConnection
+                connection.requestMethod = method
+                connection.connectTimeout = 180000  // 3 minutes
+                connection.readTimeout = 180000
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.setRequestProperty("X-API-Key", apiKey)
+                connection.setRequestProperty("Accept", "application/json")
+
+                if (method == "POST" && body.isNotEmpty()) {
+                    connection.doOutput = true
+                    connection.outputStream.use { os ->
+                        os.write(body.toByteArray(Charsets.UTF_8))
+                    }
+                }
+
+                val responseCode = connection.responseCode
+                Log.d(TAG, "API Response code: $responseCode")
+
+                val response = if (responseCode >= 400) {
+                    connection.errorStream?.bufferedReader()?.use { it.readText() } ?: "Error"
+                } else {
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                }
+
+                Log.d(TAG, "API Response: ${response.take(200)}")
+
+                // Return JSON with status and response
+                "{\"status\":$responseCode,\"data\":$response}"
+            } catch (e: Exception) {
+                Log.e(TAG, "API call error", e)
+                "{\"status\":-1,\"error\":\"${e.message?.replace("\"", "'") ?: "Unknown error"}\"}"
+            }
+        }
     }
 
     // Speech Recognition
