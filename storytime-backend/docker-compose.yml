@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  edge-tts:
+    image: travisvn/openai-edge-tts:latest
+    container_name: storytime-edge-tts
+    environment:
+      - PORT=5050
+      - API_KEY=sk-storytime
+    restart: always
+    networks:
+      - storytime-network
+
+  storytime-api:
+    build: .
+    container_name: storytime-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - EDGE_TTS_URL=http://edge-tts:5050
+    depends_on:
+      - edge-tts
+    restart: always
+    volumes:
+      - stories-data:/tmp/stories
+      - ./prompts:/app/app/prompts
+    networks:
+      - storytime-network
+
+networks:
+  storytime-network:
+    driver: bridge
+
+volumes:
+  stories-data:

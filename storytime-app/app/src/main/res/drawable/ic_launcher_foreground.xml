@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Book icon centered in adaptive icon safe zone -->
+    <group
+        android:translateX="27"
+        android:translateY="27">
+
+        <!-- Book base -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M6,6 L6,48 C6,50 8,52 10,52 L44,52 C46,52 48,50 48,48 L48,6 C48,4 46,2 44,2 L10,2 C8,2 6,4 6,6 Z"/>
+
+        <!-- Book spine -->
+        <path
+            android:fillColor="#E8E8FF"
+            android:pathData="M6,6 L6,48 C6,50 8,52 10,52 L14,52 L14,2 L10,2 C8,2 6,4 6,6 Z"/>
+
+        <!-- Book lines -->
+        <path
+            android:fillColor="#6C63FF"
+            android:pathData="M20,14 L40,14"
+            android:strokeWidth="3"
+            android:strokeColor="#6C63FF"/>
+        <path
+            android:fillColor="#6C63FF"
+            android:pathData="M20,24 L40,24"
+            android:strokeWidth="3"
+            android:strokeColor="#6C63FF"/>
+        <path
+            android:fillColor="#6C63FF"
+            android:pathData="M20,34 L32,34"
+            android:strokeWidth="3"
+            android:strokeColor="#6C63FF"/>
+
+        <!-- Star -->
+        <path
+            android:fillColor="#FFD700"
+            android:pathData="M40,40 L42,44 L46,44 L43,47 L44,51 L40,48 L36,51 L37,47 L34,44 L38,44 Z"/>
+    </group>
+</vector>

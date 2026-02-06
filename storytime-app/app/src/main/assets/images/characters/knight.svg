@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="knightBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3498DB"/>
+      <stop offset="100%" style="stop-color:#2980B9"/>
+    </linearGradient>
+    <linearGradient id="helmet" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#BDC3C7"/>
+      <stop offset="100%" style="stop-color:#95A5A6"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#knightBg)"/>
+  <!-- Helmet -->
+  <ellipse cx="50" cy="45" rx="30" ry="32" fill="url(#helmet)"/>
+  <!-- Helmet top decoration -->
+  <ellipse cx="50" cy="18" rx="5" ry="12" fill="#E74C3C"/>
+  <rect x="47" y="18" width="6" height="15" fill="#E74C3C"/>
+  <!-- Face opening -->
+  <ellipse cx="50" cy="55" rx="20" ry="18" fill="#2C3E50"/>
+  <!-- Face inside helmet -->
+  <ellipse cx="50" cy="57" rx="16" ry="14" fill="#FFE4C4"/>
+  <!-- Eyes -->
+  <ellipse cx="44" cy="54" rx="3" ry="4" fill="#4A4A4A"/>
+  <ellipse cx="56" cy="54" rx="3" ry="4" fill="#4A4A4A"/>
+  <circle cx="45" cy="53" r="1" fill="white"/>
+  <circle cx="57" cy="53" r="1" fill="white"/>
+  <!-- Determined eyebrows -->
+  <path d="M 38 49 L 48 51" stroke="#8B4513" stroke-width="2" fill="none"/>
+  <path d="M 62 49 L 52 51" stroke="#8B4513" stroke-width="2" fill="none"/>
+  <!-- Smile -->
+  <path d="M 44 62 Q 50 66 56 62" stroke="#E57373" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Helmet details -->
+  <line x1="20" y1="45" x2="30" y2="45" stroke="#7F8C8D" stroke-width="3"/>
+  <line x1="70" y1="45" x2="80" y2="45" stroke="#7F8C8D" stroke-width="3"/>
+  <!-- Chin guard -->
+  <path d="M 30 65 Q 50 80 70 65" stroke="#95A5A6" stroke-width="4" fill="none"/>
+</svg>
