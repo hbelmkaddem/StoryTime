@@ -1,5 +1,31 @@
 // StoryTime App - Main JavaScript
 
+// Global error handler to catch ANY JavaScript errors
+window.onerror = function(message, source, lineno, colno, error) {
+    const errorMsg = `JS Error: ${message} (line ${lineno})`;
+    console.error('Global error:', errorMsg, error);
+    // Show error in UI
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = errorMsg.substring(0, 150);
+        toast.className = 'toast active error';
+        setTimeout(() => toast.className = 'toast', 8000);
+    }
+    return false;
+};
+
+// Global promise rejection handler
+window.onunhandledrejection = function(event) {
+    const errorMsg = `Unhandled: ${event.reason?.message || event.reason || 'Unknown error'}`;
+    console.error('Unhandled rejection:', errorMsg);
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = errorMsg.substring(0, 150);
+        toast.className = 'toast active error';
+        setTimeout(() => toast.className = 'toast', 8000);
+    }
+};
+
 // Configuration
 const CONFIG = {
     API_URL: 'http://api.onlinefitnessblog.com',
