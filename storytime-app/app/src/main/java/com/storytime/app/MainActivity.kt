@@ -255,11 +255,13 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "Making API call to: $url")
                 val connection = URL(url).openConnection() as java.net.HttpURLConnection
                 connection.requestMethod = method
-                connection.connectTimeout = 180000  // 3 minutes
-                connection.readTimeout = 180000
+                connection.connectTimeout = 300000  // 5 minutes
+                connection.readTimeout = 300000    // 5 minutes
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.setRequestProperty("X-API-Key", apiKey)
                 connection.setRequestProperty("Accept", "application/json")
+                connection.setRequestProperty("Connection", "keep-alive")
+                connection.setRequestProperty("Keep-Alive", "timeout=300")
 
                 if (method == "POST" && body.isNotEmpty()) {
                     connection.doOutput = true
