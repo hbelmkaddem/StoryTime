@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity() {
             mediaPlaybackRequiresUserGesture = false
             loadWithOverviewMode = true
             useWideViewPort = true
+            // Allow mixed content (HTTP from HTTPS or file://)
+            mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            // Allow cross-origin requests
+            allowUniversalAccessFromFileURLs = true
+            allowFileAccessFromFileURLs = true
         }
 
         webView.webViewClient = WebViewClient()
